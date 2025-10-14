@@ -1,0 +1,8 @@
+# BalatroSaveEditor repository (external dependency)
+BalatroSaveEditor/
+
+# Logs
+php_errors.log
+
+# profile
+data/profile.json
