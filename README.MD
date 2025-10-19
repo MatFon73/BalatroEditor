@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Balatro](https://img.shields.io/badge/BalatroEditor-8b5cf6?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4=)
-![Version](https://img.shields.io/badge/version-1.0.0-a78bfa?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.0.0-a78bfa?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-10b981?style=for-the-badge)
 
 **A minimalist and modern visual editor to modify your Balatro meta.jkr and profile.jkr files**
@@ -67,141 +67,53 @@
 - Unlock/Discovered/Lock everything with one click
 - Individual toggle for each card
 - **Import/Export .jkr files** (native Balatro format)
-- Export to .json for manual editing
+- **100% Client-Side Processing** - No server required!
 
 ---
 
 ## Installation
 
-### Prerequisites
+### Simple Setup - No Dependencies Required!
 
-- XAMPP (Apache + PHP)
-- Python 3.8 or higher
-- Git
+This editor runs completely in your browser with no backend or server requirements.
 
-### Step 1: Clone the Repository
+### Step 1: Download the Project
 
+**Option A: Download ZIP**
+1. Click the green "Code" button on GitHub
+2. Select "Download ZIP"
+3. Extract the ZIP file to any folder on your computer
+
+**Option B: Clone with Git**
 ```bash
 git clone https://github.com/MatFon73/BalatroEditor.git
 ```
 
-### Step 2: Move to XAMPP htdocs
+### Step 2: Open the Editor
 
-Move the project folder to your XAMPP htdocs directory:
+1. Navigate to the extracted/cloned folder
+2. Double-click `index.html`
+3. The editor will open in your default browser
 
-**Windows:**
+That's it! No server, no installation, no configuration needed.
 
+### File Structure
 ```
-C:\xampp\htdocs\BalatroEditor\
-```
-
-**macOS:**
-
-```
-/Applications/XAMPP/htdocs/BalatroEditor/
-```
-
-**Linux:**
-
-```
-/opt/lampp/htdocs/BalatroEditor/
-```
-
-### Step 3: Clone BalatroSaveEditor
-
-Navigate to your project folder and clone the required dependency:
-
-```bash
-cd C:\xampp\htdocs\BalatroEditor # Adjust path for your OS
-
-git clone https://github.com/TeddyHuang-00/BalatroSaveEditor.git
-```
-
-### Step 4: Install Python Dependencies
-
-```bash
-cd BalatroSaveEditor
-
-pip install -r requirements.txt
-
-cd ..
-```
-
-### Step 5: Verify Python Installation
-
-Make sure Python is accessible from command line:
-
-```bash
-py --version
-```
-
-If you get an error, add Python to your system PATH:
-
-**Windows:**
-
-- Add to PATH: `C:\Users\{Your_User}\AppData\Local\Programs\Python\Python313\;`
-
-- Restart your terminal
-
-**macOS/Linux:**
-
-- Python should be available as `python3`
-
-### Step 6: File Structure
-
-Your final directory structure should look like this:
-
-```
-htdocs/
-└── BalatroEditor/
-    ├── BalatroSaveEditor/     ← Cloned repository
-    │   ├── main.py
-    │   └── requirements.txt
-    ├── data/
-    │   └── meta.json
-    ├── public/
-    │   ├── css/
-    │   │   ├── style.css
-    │   │   └── profile.css
-    │   └── js/
-    │       ├── meta.js
-    │       └── profile.js
-    ├── api.php            ← PHP API endpoint
-    ├── favicon.ico
-    ├── index.html
-    ├── LICENSE
-    ├── php_errors.log
-    └── README.md
-```
-
-### Step 7: Start XAMPP
-
-1. Open XAMPP Control Panel
-2. Start **Apache** (MySQL is not required)
-3. Make sure Apache is running on port 80 (or note your custom port)
-
-### Step 8: Test the Installation
-
-Open your browser and navigate to:
-
-```
-http://localhost/BalatroEditor/
-```
-
-To verify the API is working, visit:
-
-```
-http://localhost/BalatroEditor/api.php?endpoint=health
-```
-
-You should see a JSON response like:
-
-```json
-{
-  "status": "ok",
-  "balatro_editor_found": true,
-  "python_available": true
-}
+BalatroEditor/
+├── data/
+│   └── meta.json
+├── public/
+│   ├── css/
+│   │   ├── style.css
+│   │   └── profile.css
+│   └── js/
+│       ├── meta.js
+│       ├── profile.js
+│       └── jkr-converter.js    ← Client-side JKR processing
+├── favicon.ico
+├── index.html
+├── LICENSE
+└── README.md
 ```
 
 ---
@@ -213,28 +125,24 @@ You should see a JSON response like:
 **File locations:**
 
 **Windows:**
-
 ```
 C:\Users\{Your_User}\AppData\Roaming\Balatro\1\meta.jkr
 C:\Users\{Your_User}\AppData\Roaming\Balatro\profile.jkr
 ```
 
 **macOS:**
-
 ```
 ~/Library/Application Support/Balatro/1/meta.jkr
 ~/Library/Application Support/Balatro/profile.jkr
 ```
 
 **Linux:**
-
 ```
 ~/.local/share/Balatro/1/meta.jkr
 ~/.local/share/Balatro/profile.jkr
 ```
 
 **Steam Deck:**
-
 ```
 ~/.local/share/Balatro/1/meta.jkr
 ~/.local/share/Balatro/profile.jkr
@@ -270,15 +178,17 @@ C:\Users\{Your_User}\AppData\Roaming\Balatro\profile.jkr
 
 Once you've imported your profile.jkr:
 
-1. **Player Name**: Click the name field to change your profile name
-2. **High Scores**: Edit any high score value (Highest Ante, Best Hand, Most Money, Win Streak, etc.)
-3. **Career Statistics**: Modify total counts (Wins, Losses, Hands Played, Dollars Earned, etc.)
-4. **Progress Tracking**: Adjust completion percentages
+1. **Enable Edit Mode**: Click the "Edit Mode" button to enable editing
+2. **Player Name**: Click the name field to change your profile name
+3. **High Scores**: Edit any high score value (Highest Ante, Best Hand, Most Money, Win Streak, etc.)
+4. **Career Statistics**: Modify total counts (Wins, Losses, Hands Played, Dollars Earned, etc.)
+5. **Progress Tracking**: Adjust completion percentages
    - Challenges Completed (max 20)
    - Deck Stakes (max 120)
    - Joker Stickers (max 1200)
    - Items Discovered (max 340)
-5. **Deck Statistics**: View (read-only) detailed stats for each deck including wins, losses, and win rates
+6. **Challenge Progress**: Click on challenges to mark them as completed/incomplete
+7. **Deck Statistics**: View (read-only) detailed stats for each deck including wins, losses, and win rates
 
 Progress bars update automatically as you edit values.
 
@@ -306,19 +216,6 @@ Progress bars update automatically as you edit values.
 4. **Backup your original file** (highly recommended)
 5. Replace the original `profile.jkr` at the Balatro folder location
 6. Start Balatro to see your updated profile
-
-#### Alternative: JSON Export
-
-If you prefer manual editing:
-
-1. Click **"Export .json"** instead
-2. Edit the JSON file with any text editor
-3. Use the Python script to convert back:
-   ```bash
-   cd BalatroSaveEditor
-
-   py main.py import path/to/meta.json -o meta.jkr
-   ```
 
 ---
 
@@ -365,39 +262,7 @@ If you prefer manual editing:
 - Fetch API for loading data
 - Events and listeners
 - Real-time filtering and search
-
-</td>
-</tr>
-</table>
-
-### Backend
-
-<table>
-<tr>
-<td align="center" width="50%">
-
-### PHP
-
-**Version**: 7.4+
-
-**Usage**:
-
-- API endpoint for JKR conversion
-- Execute Python scripts
-- Handle file operations
-
-</td>
-<td align="center" width="50%">
-
-### Python
-
-**Version**: 3.8+
-
-**Usage**:
-
-- JKR file encoding/decoding
-- Lua serialization
-- Zlib compression
+- Client-side JKR processing
 
 </td>
 </tr>
@@ -407,7 +272,7 @@ If you prefer manual editing:
 
 - **Font Awesome**: 7.1.0 - Icon library for UI elements
 - **Google Fonts**: Inter font family
-- **BalatroSaveEditor**: JKR conversion engine
+- **Pako**: 2.1.0 - Zlib compression/decompression for JKR files
 
 ---
 
@@ -417,7 +282,8 @@ If you prefer manual editing:
 
 - **Lazy Loading**: Images from Balatro Wiki
 - **Skeleton Loading**: Visual feedback during data loading
-- **Async Operations**: Non-blocking file conversions
+- **Client-Side Processing**: All JKR conversions happen in your browser
+- **No Server Required**: Works offline after initial load
 - **Mobile First**: Design optimized for all devices
 
 ### Browser Compatibility
@@ -434,68 +300,50 @@ If you prefer manual editing:
 
 ## Troubleshooting
 
-### Python Not Found Error
+### Editor Not Opening
 
-**Problem**: PHP can't execute Python commands
+**Problem**: Double-clicking index.html doesn't work
 
-**Solution 1**: Use full path to Python in `api.php`:
+**Solution**: 
+- Right-click `index.html` → "Open with" → Select your preferred browser
+- Or drag and drop `index.html` into an open browser window
 
-```php
-$python_cmd = 'C:\\Users\\{Your User}\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'; // Windows
+### Images Not Loading
 
-$python_cmd = '/usr/bin/python3'; // macOS/Linux
-```
+**Problem**: Card images show placeholder icons
 
-**Solution 2**: Add Python to system PATH
+**Solution**: 
+- This is normal - images are loaded from Balatro Wiki on-demand
+- Check your internet connection
+- Some cards may not have images available
 
-- **Windows**: System Properties → Environment Variables → PATH → Add Python directory
-- **macOS/Linux**: Should work with `python3` command
+### Import/Export Not Working
 
-### BalatroSaveEditor Not Found
+**Problem**: Can't import or export .jkr files
 
-Make sure the repository is cloned in the correct location:
-
-```
-htdocs/BalatroEditor/BalatroSaveEditor/main.py
-```
-
-Verify the file exists at this exact path.
-
-### Apache Port Already in Use
-
-If port 80 is occupied:
-
-1. Open XAMPP Control Panel
-2. Click **Config** → **httpd.conf**
-3. Change `Listen 80` to `Listen 8080`
-4. Restart Apache
-5. Access editor at: `http://localhost:8080/BalatroEditor/`
-
-### exec() Function Disabled in PHP
-
-Some PHP installations disable `exec()` for security.
-
-**Solution**: Edit `php.ini`:
-
-```ini
-; Remove 'exec' from this line (if present)
-disable_functions =
-```
-
-Restart Apache after editing.
-
-### Conversion Fails Without Error
-
-1. Open browser console (F12)
-2. Check for JavaScript errors
-3. Verify API health endpoint returns `true` for both fields
-4. Check Apache error logs in XAMPP
+**Solution**:
+- Make sure you're using a modern browser (Chrome 90+, Firefox 88+, etc.)
+- Check browser console (F12) for error messages
+- Verify the file you're importing is a valid Balatro save file
 
 ### Profile Not Loading
 
 **Problem**: Profile tab shows "No Profile Loaded"
 
-**Solution**: Make sure you're importing the `profile.jkr` file (not `meta.jkr`) and that the file is from a valid Balatro save.
+**Solution**: 
+- Make sure you're importing the `profile.jkr` file (not `meta.jkr`)
+- Verify the file is from a valid Balatro save
+- Try importing again after refreshing the page
+
+### Changes Not Saving in Game
+
+**Problem**: Exported file doesn't work in Balatro
+
+**Solution**:
+1. Make sure Balatro is completely closed before replacing files
+2. Backup your original files first
+3. Verify you're replacing the correct file in the correct location
+4. Check that the file extension is exactly `.jkr` (not `.jkr.txt`)
 
 ---
 
@@ -508,16 +356,15 @@ Restart Apache after editing.
 ### Special Thanks
 
 - **[LocalThunk](https://x.com/localthunk)** - Creator of Balatro
-- **[TeddyHuang-00](https://github.com/TeddyHuang-00)** - Creator of [BalatroSaveEditor](https://github.com/TeddyHuang-00/BalatroSaveEditor)
+- **[TeddyHuang-00](https://github.com/TeddyHuang-00)** - Creator of [BalatroSaveEditor](https://github.com/TeddyHuang-00/BalatroSaveEditor) - JKR format reference
 - **Balatro Wiki Community** - For card images and information
 - **Contributors** - Everyone who has helped improve this project
 
 ### JKR Format Implementation
 
-This project uses the JKR file format encoding/decoding algorithm from **[BalatroSaveEditor](https://github.com/TeddyHuang-00/BalatroSaveEditor)** by TeddyHuang-00. Without their work in reverse-engineering the Balatro save format, this editor wouldn't have been possible.
+This project implements client-side JKR file processing inspired by the format documentation from **[BalatroSaveEditor](https://github.com/TeddyHuang-00/BalatroSaveEditor)** by TeddyHuang-00.
 
 - **Repository**: [github.com/TeddyHuang-00/BalatroSaveEditor](https://github.com/TeddyHuang-00/BalatroSaveEditor)
-- **Implementation**: JKR format encoder/decoder with Lua serialization
 
 ---
 

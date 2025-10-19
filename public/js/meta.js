@@ -22,14 +22,11 @@ const categories = {
     },
     tags: { prefix: 'tag_', name: 'Tags' },
     blinds: { prefix: 'bl_', name: 'Blinds' },
-    profile: { name: 'Profile', isProfile: true } // NUEVA LÍNEA
+    profile: { name: 'Profile', isProfile: true }
 };
-
 
 let currentCategory = 'jokers';
 let searchTerm = '';
-
-const API_URL = `${window.location.protocol}//${window.location.host}${window.location.pathname.replace('index.html', '')}api.php`;
 
 document.addEventListener('DOMContentLoaded', () => {
     loadMetaJSON();
@@ -89,75 +86,21 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    window.addEventListener('error', function (e) {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            return false;
+        }
+    }, true);
 });
 
+// Now uses local jkr-converter.js instead of API
 async function jsonToJkr(jsonData) {
-    try {
-        const response = await fetch(`${API_URL}?endpoint=json-to-jkr`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(jsonData)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        if (!result.success) {
-            throw new Error(result.error || 'Unknown error from server');
-        }
-
-        if (result.encoding === 'base64') {
-            const binaryString = atob(result.jkr_content);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
-            }
-            return bytes;
-        }
-
-        return result.jkr_content;
-    } catch (error) {
-        console.error('Error:', error);
-        throw error;
-    }
+    return await compressToJkr(jsonData);
 }
 
 async function jkrToJson(jkrContent) {
-    try {
-        let contentToSend = jkrContent;
-        if (jkrContent instanceof Uint8Array) {
-            const binaryString = String.fromCharCode.apply(null, jkrContent);
-            contentToSend = btoa(binaryString);
-        }
-
-        const response = await fetch(`${API_URL}?endpoint=jkr-to-json`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ jkr_content: contentToSend })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        if (!result.success) {
-            throw new Error(result.error);
-        }
-
-        return result.data;
-    } catch (error) {
-        console.error('Error converting JKR to JSON:', error);
-        throw error;
-    }
+    return await decompressFromJkr(jkrContent);
 }
 
 async function exportJkr() {
@@ -170,9 +113,7 @@ async function exportJkr() {
 
         const jkrContent = await jsonToJkr(metaData);
 
-        const blob = jkrContent instanceof Uint8Array
-            ? new Blob([jkrContent], { type: 'application/octet-stream' })
-            : new Blob([jkrContent], { type: 'text/plain' });
+        const blob = new Blob([jkrContent], { type: 'application/octet-stream' });
 
         if (window.showSaveFilePicker) {
             try {
@@ -209,11 +150,16 @@ async function exportJkr() {
             showNotification('meta.jkr exported successfully!', 'success');
         }
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Export error:', error);
+        showNotification('Error exporting: ' + error.message, 'error');
     }
 }
-
 async function importJkr(file) {
+    if (file.name !== 'meta.jkr' && file.name !== '1') {
+        showNotification('Please select a valid meta.jkr file', 'error');
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = async (event) => {
         try {
@@ -221,49 +167,44 @@ async function importJkr(file) {
             const arrayBuffer = event.target.result;
             const uint8Array = new Uint8Array(arrayBuffer);
             const jsonData = await jkrToJson(uint8Array);
-            
+
             console.log('=== RAW JKR DATA ===');
             console.log('Full jsonData:', jsonData);
-            
-            // Verificar la estructura
+
             console.log('Has unlocked?', jsonData.hasOwnProperty('unlocked'));
             console.log('Has discovered?', jsonData.hasOwnProperty('discovered'));
             console.log('Has alerted?', jsonData.hasOwnProperty('alerted'));
-            
-            // Contar estados ANTES de asignar
+
             if (jsonData.unlocked && jsonData.discovered) {
                 const unlockedCount = Object.keys(jsonData.unlocked).filter(k => jsonData.unlocked[k] === true).length;
-                const discoveredOnlyCount = Object.keys(jsonData.discovered).filter(k => 
+                const discoveredOnlyCount = Object.keys(jsonData.discovered).filter(k =>
                     jsonData.discovered[k] === true && jsonData.unlocked[k] !== true
                 ).length;
                 const totalDiscovered = Object.keys(jsonData.discovered).filter(k => jsonData.discovered[k] === true).length;
-                
+
                 console.log('Import counts:', {
                     unlocked: unlockedCount,
                     discoveredOnly: discoveredOnlyCount,
                     totalDiscovered: totalDiscovered
                 });
-                
-                // Mostrar algunas muestras
+
                 console.log('Sample discovered items:', Object.keys(jsonData.discovered).slice(0, 10).map(k => ({
                     id: k,
                     discovered: jsonData.discovered[k],
                     unlocked: jsonData.unlocked[k]
                 })));
             }
-            
-            // Asignar correctamente los datos importados
+
             metaData.unlocked = jsonData.unlocked || {};
             metaData.discovered = jsonData.discovered || {};
             metaData.alerted = jsonData.alerted || {};
-            
-            // Verificar después de asignar
+
             console.log('After assignment:', {
                 unlockedKeys: Object.keys(metaData.unlocked).length,
                 discoveredKeys: Object.keys(metaData.discovered).length,
                 alertedKeys: Object.keys(metaData.alerted).length
             });
-            
+
             renderCategory(currentCategory);
             showNotification('meta.jkr imported successfully!', 'success');
         } catch (error) {
@@ -273,7 +214,6 @@ async function importJkr(file) {
     };
     reader.readAsArrayBuffer(file);
 }
-
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
@@ -297,18 +237,16 @@ function showNotification(message, type = 'info') {
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
-
 async function loadMetaJSON() {
     try {
         showSkeletonLoading();
         const response = await fetch('data/meta.json');
         const data = await response.json();
-        
-        // Asignar correctamente cada propiedad
+
         metaData.unlocked = data.unlocked || {};
         metaData.discovered = data.discovered || {};
         metaData.alerted = data.alerted || {};
-        
+
         await new Promise(resolve => setTimeout(resolve, 300));
         renderCategory(currentCategory);
     } catch (error) {
@@ -321,7 +259,6 @@ async function loadMetaJSON() {
         `;
     }
 }
-
 function showSkeletonLoading() {
     const container = document.getElementById('content-container');
     const skeletonCards = Array(12).fill(0).map(() => `
@@ -351,7 +288,6 @@ function showSkeletonLoading() {
         </div>
     `;
 }
-
 function formatName(id) {
     return id
         .replace(/^(j_|c_|v_|b_|m_|e_|tag_|bl_|p_)/, '')
@@ -360,7 +296,6 @@ function formatName(id) {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }
-
 function updateStats() {
     const items = getItemsForCategory(currentCategory);
     const unlocked = items.filter(item => metaData.unlocked[item] === true).length;
@@ -381,7 +316,6 @@ function updateStats() {
         `;
     }
 }
-
 function getImageUrl(id, category) {
     const name = formatName(id);
     const wikiName = name.replace(/ /g, '_');
@@ -499,7 +433,6 @@ function getImageUrl(id, category) {
             return buildUrl(`${wikiName}.png`);
     }
 }
-
 function getItemsForCategory(category) {
     const cat = categories[category];
     const items = [];
@@ -514,10 +447,9 @@ function getItemsForCategory(category) {
                 }
             }
         });
-        return [...new Set(items)].sort(); // Eliminar duplicados
+        return [...new Set(items)].sort();
     }
 
-    // Para categorías normales, iterar sobre TODAS las keys que existen
     const allKeys = new Set([
         ...Object.keys(metaData.unlocked || {}),
         ...Object.keys(metaData.discovered || {}),
@@ -552,14 +484,12 @@ function getItemsForCategory(category) {
             }
         }
     }
-    return [...new Set(items)].sort(); // Eliminar duplicados
+    return [...new Set(items)].sort();
 }
-
 function renderCategory(category) {
     currentCategory = category;
     const container = document.getElementById('content-container');
-    
-    // Si es la categoría profile, usar el renderer de profile
+
     if (category === 'profile') {
         if (typeof renderProfile === 'function') {
             renderProfile();
@@ -574,7 +504,6 @@ function renderCategory(category) {
         return;
     }
 
-    // Código existente para otras categorías...
     showCategorySkeletonLoading(category);
 
     setTimeout(() => {
@@ -621,59 +550,61 @@ function renderCategory(category) {
         loadImagesQuietly();
     }, 150);
 }
-
 function loadImagesQuietly() {
     document.querySelectorAll('img[data-src]').forEach(img => {
         const originalUrl = img.dataset.src;
         const id = img.dataset.id;
         const category = img.dataset.category;
-        
+
         tryLoadImage(img, originalUrl, id, category);
     });
 }
+// Caché local de imágenes comprobadas
+const cacheExistencia = {};
 
-function tryLoadImage(imgElement, url, id, category) {
-    const testImg = new Image();
-    
-    testImg.onload = function() {
-        imgElement.src = url;
-        imgElement.removeAttribute('data-src');
-    };
-    
-    testImg.onerror = function() {
-        // Intentar URL alternativa para jokers
-        if (category === 'jokers') {
-            const name = formatName(id);
-            const wikiName = name.replace(/ /g, '_');
-            
-            let alternativeUrl;
-            if (url.includes('_Joker.png')) {
-                alternativeUrl = `https://balatrowiki.org/images/${wikiName}.png`;
-            } else {
-                alternativeUrl = `https://balatrowiki.org/images/${wikiName}_Joker.png`;
-            }
-            
-            // Intentar la URL alternativa
-            const testImg2 = new Image();
-            testImg2.onload = function() {
-                imgElement.src = alternativeUrl;
-                imgElement.removeAttribute('data-src');
-            };
-            testImg2.onerror = function() {
-                // Si ambas fallan, mostrar placeholder
-                imgElement.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23333%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2212%22%3E?%3C/text%3E%3C/svg%3E';
-                imgElement.removeAttribute('data-src');
-            };
-            testImg2.src = alternativeUrl;
-        } else {
-            // Para otras categorías, mostrar placeholder directamente
-            imgElement.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23333%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2212%22%3E?%3C/text%3E%3C/svg%3E';
-            imgElement.removeAttribute('data-src');
-        }
-    };
-    
-    testImg.src = url;
+async function imageExists(url) {
+    if (cacheExistencia[url] !== undefined) return cacheExistencia[url];
+
+    try {
+        const res = await fetch(url, { method: 'HEAD' });
+        const ok = res.ok;
+        cacheExistencia[url] = ok;
+        return ok;
+    } catch {
+        cacheExistencia[url] = false;
+        return false;
+    }
 }
+
+async function tryLoadImage(imgElement, url, id, category) {
+    const baseSvg = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23333%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2212%22%3E?%3C/text%3E%3C/svg%3E';
+    let finalUrl = url;
+
+    if (category === 'jokers') {
+        const name = formatName(id);
+        const wikiName = name.replace(/ /g, '_');
+        const altUrl = url.includes('_Joker.png')
+            ? `https://balatrowiki.org/images/${wikiName}.png`
+            : `https://balatrowiki.org/images/${wikiName}_Joker.png`;
+
+        // Verifica primero sin disparar ningún 404
+        if (await imageExists(url)) {
+            finalUrl = url;
+        } else if (await imageExists(altUrl)) {
+            finalUrl = altUrl;
+        } else {
+            finalUrl = baseSvg;
+        }
+    } else {
+        if (!(await imageExists(url))) {
+            finalUrl = baseSvg;
+        }
+    }
+
+    imgElement.src = finalUrl;
+    imgElement.removeAttribute('data-src');
+}
+
 
 function showCategorySkeletonLoading(category) {
     const container = document.getElementById('content-container');
@@ -706,11 +637,10 @@ function showCategorySkeletonLoading(category) {
         </div>
     `;
 }
-
 function getItemState(id) {
     const unlocked = metaData.unlocked[id];
     const discovered = metaData.discovered[id];
-    
+
     if (unlocked === true) {
         return 'unlocked';
     } else if (discovered === true && unlocked !== true) {
@@ -719,7 +649,6 @@ function getItemState(id) {
         return 'locked';
     }
 }
-
 function createItemCard(id, category) {
     const state = getItemState(id);
     const name = formatName(id);
@@ -734,11 +663,9 @@ function createItemCard(id, category) {
         </div>
     `;
 }
-
 function toggleItem(id) {
     const currentState = getItemState(id);
-    
-    // Ciclo: locked -> discovered -> unlocked -> locked
+
     if (currentState === 'locked') {
         metaData.discovered[id] = true;
         metaData.unlocked[id] = false;
@@ -746,36 +673,29 @@ function toggleItem(id) {
         metaData.discovered[id] = true;
         metaData.unlocked[id] = true;
         metaData.alerted[id] = true;
-    } else { // unlocked
+    } else {
         metaData.discovered[id] = false;
         metaData.unlocked[id] = false;
         metaData.alerted[id] = false;
     }
 
-    // Actualizar solo la carta específica sin re-renderizar todo
     const card = document.querySelector(`[data-id="${id}"]`);
     if (card) {
         const newState = getItemState(id);
-        
-        // Remover todas las clases de estado
+
         card.classList.remove('locked', 'discovered', 'unlocked');
-        
-        // Agregar la nueva clase de estado
         card.classList.add(newState);
-        
-        // Actualizar el indicador de estado
+
         const stateIndicator = card.querySelector('.state-indicator');
         if (stateIndicator) {
-            stateIndicator.textContent = newState === 'unlocked' ? 'Unlocked' : 
-                                         newState === 'discovered' ? 'Discovered' : 
-                                         'Locked';
+            stateIndicator.textContent = newState === 'unlocked' ? 'Unlocked' :
+                newState === 'discovered' ? 'Discovered' :
+                    'Locked';
         }
     }
 
-    // Actualizar solo las estadísticas
     updateStats();
 }
-
 function unlockAll() {
     for (let key in metaData.unlocked) {
         metaData.unlocked[key] = true;
@@ -784,7 +704,6 @@ function unlockAll() {
     }
     renderCategory(currentCategory);
 }
-
 function lockAll() {
     for (let key in metaData.unlocked) {
         metaData.unlocked[key] = false;
@@ -792,48 +711,4 @@ function lockAll() {
         metaData.alerted[key] = false;
     }
     renderCategory(currentCategory);
-}
-
-function exportJSON() {
-    const dataStr = JSON.stringify(metaData, null, 4);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-
-    if (window.showSaveFilePicker) {
-        window.showSaveFilePicker({
-            suggestedName: 'meta.json',
-            types: [{
-                description: 'JSON File',
-                accept: { 'application/json': ['.json'] }
-            }]
-        }).then(async (fileHandle) => {
-            const writable = await fileHandle.createWritable();
-            await writable.write(blob);
-            await writable.close();
-            showNotification('meta.json exported successfully!', 'success');
-        }).catch((err) => {
-            if (err.name !== 'AbortError') {
-                console.error('Save error:', err);
-                fallbackDownload(blob, 'meta.json');
-            } else {
-                showNotification('Export cancelled', 'info');
-            }
-        });
-    } else {
-        fallbackDownload(blob, 'meta.json');
-    }
-}
-
-function fallbackDownload(blob, filename) {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    setTimeout(() => {
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }, 100);
-    showNotification(`${filename} exported successfully!`, 'success');
 }

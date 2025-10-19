@@ -11,40 +11,40 @@ const REQUIRED_PROFILE_KEYS = [
 
 function validateProfileData(data) {
     const errors = [];
-    
+
     if (data.unlocked || data.discovered || data.alerted) {
         return {
             valid: false,
             error: 'This is a meta.jkr file, not a profile.jkr file. Please select your profile.jkr file instead.'
         };
     }
-    
+
     REQUIRED_PROFILE_KEYS.forEach(key => {
         if (!data.hasOwnProperty(key)) {
             errors.push(`Missing required key: ${key}`);
         }
     });
-    
+
     if (data.career_stats && typeof data.career_stats !== 'object') {
         errors.push('career_stats must be an object');
     }
-    
+
     if (data.high_scores && typeof data.high_scores !== 'object') {
         errors.push('high_scores must be an object');
     }
-    
+
     if (data.progress) {
         if (!data.progress.challenges) errors.push('progress.challenges is missing');
         if (!data.progress.deck_stakes) errors.push('progress.deck_stakes is missing');
     }
-    
+
     if (errors.length > 0) {
         return {
             valid: false,
             error: 'Invalid profile.jkr structure:\n' + errors.join('\n')
         };
     }
-    
+
     return { valid: true };
 }
 
@@ -64,7 +64,7 @@ function toggleEditMode() {
     editMode = !editMode;
     const editBtn = document.getElementById('toggle-edit-btn');
     const allInputs = document.querySelectorAll('.profile-input, .stat-value-input, .progress-input, .editable-stat');
-    
+
     if (editMode) {
         editBtn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Editing';
         editBtn.classList.add('editing');
@@ -88,9 +88,9 @@ function renderProfile() {
                 <div style="background: var(--bg-secondary); padding: 16px; border-radius: 8px; margin: 20px auto; max-width: 500px; border: 1px solid var(--border);">
                     <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
                         <i class="fa-solid fa-circle-info"></i> <strong>File Location:</strong><br>
-                        Windows: <code>C:\\Users\\YourName\\AppData\\Roaming\\Balatro\\1\\profile.jkr</code><br>
-                        Mac: <code>~/Library/Application Support/Balatro/1/profile.jkr</code><br>
-                        Linux: <code>~/.local/share/Balatro/1/profile.jkr</code>
+                        Windows: <code>C:\\Users\\YourName\\AppData\\Roaming\\Balatro\\profile.jkr</code><br>
+                        Mac: <code>~/Library/Application Support/Balatro/profile.jkr</code><br>
+                        Linux: <code>~/.local/share/Balatro/profile.jkr</code>
                     </p>
                 </div>
                 <label for="import-profile-jkr" class="control-btn primary" style="margin: 20px auto; width: 200px; cursor: pointer; font-size:13px;">
@@ -413,10 +413,10 @@ function renderTopJokers() {
             </thead>
             <tbody>
                 ${jokers.map(([id, data], index) => {
-                    const wins = Object.values(data.wins || {}).reduce((a, b) => a + b, 0);
-                    const losses = Object.values(data.losses || {}).reduce((a, b) => a + b, 0);
-                    const winRate = wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : 0;
-                    return `
+        const wins = Object.values(data.wins || {}).reduce((a, b) => a + b, 0);
+        const losses = Object.values(data.losses || {}).reduce((a, b) => a + b, 0);
+        const winRate = wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : 0;
+        return `
                         <tr>
                             <td>${index + 1}</td>
                             <td>${formatProfileName(id)}</td>
@@ -426,7 +426,7 @@ function renderTopJokers() {
                             <td>${winRate}%</td>
                         </tr>
                     `;
-                }).join('')}
+    }).join('')}
             </tbody>
         </table>
     `;
@@ -492,7 +492,7 @@ function renderChallengeProgress() {
     return challenges.map(challengeId => {
         const isCompleted = completed[challengeId] === true;
         return `
-            <div class="challenge-item ${isCompleted ? 'completed' : ''}">
+            <div class="challenge-item ${isCompleted ? 'completed' : ''}" data-challenge="${challengeId}">
                 <i class="fa-solid ${isCompleted ? 'fa-square-check' : 'fa-square'}"></i>
                 <span>${formatProfileName(challengeId)}</span>
             </div>
@@ -525,6 +525,39 @@ function attachProfileEventListeners() {
         });
     });
 
+    // Challenge toggle functionality
+    document.querySelectorAll('.challenge-item').forEach(item => {
+        item.addEventListener('click', function () {
+            if (!editMode) return; // Only allow editing in edit mode
+
+            const challengeId = this.dataset.challenge;
+            const isCompleted = this.classList.contains('completed');
+
+            // Toggle completion status
+            if (!profileData.challenge_progress) {
+                profileData.challenge_progress = { completed: {} };
+            }
+            if (!profileData.challenge_progress.completed) {
+                profileData.challenge_progress.completed = {};
+            }
+
+            profileData.challenge_progress.completed[challengeId] = !isCompleted;
+
+            // Update UI
+            this.classList.toggle('completed');
+            const icon = this.querySelector('i');
+            if (icon) {
+                icon.className = !isCompleted ? 'fa-solid fa-square-check' : 'fa-solid fa-square';
+            }
+
+            // Update progress count
+            const completedCount = Object.values(profileData.challenge_progress.completed).filter(v => v === true).length;
+            if (profileData.progress && profileData.progress.challenges) {
+                profileData.progress.challenges.tally = completedCount;
+            }
+        });
+    });
+
     const saveBtn = document.getElementById('save-profile');
     if (saveBtn) {
         saveBtn.addEventListener('click', exportProfileJkr);
@@ -543,6 +576,7 @@ function setNestedValue(obj, path, value) {
     current[keys[keys.length - 1]] = value;
 }
 
+// Now uses local jkr-converter.js instead of API
 async function importProfileJkr(file) {
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -553,9 +587,9 @@ async function importProfileJkr(file) {
             const uint8Array = new Uint8Array(arrayBuffer);
 
             const jsonData = await jkrToJson(uint8Array);
-            
+
             console.log('Profile data loaded, validating...', Object.keys(jsonData));
-            
+
             const validation = validateProfileData(jsonData);
             if (!validation.valid) {
                 showNotification(validation.error, 'error');
@@ -563,18 +597,25 @@ async function importProfileJkr(file) {
                 console.error('Loaded data keys:', Object.keys(jsonData));
                 return;
             }
-            
-            profileData = jsonData;
+
+            // CRITICAL: Store the COMPLETE data, don't filter anything
+            profileData = JSON.parse(JSON.stringify(jsonData));
 
             console.log('✓ Profile loaded and validated successfully');
             console.log('Profile structure:', {
                 name: profileData.name,
                 totalKeys: Object.keys(profileData).length,
+                allKeys: Object.keys(profileData),
                 hasCareerStats: !!profileData.career_stats,
                 hasHighScores: !!profileData.high_scores,
-                hasProgress: !!profileData.progress
+                hasProgress: !!profileData.progress,
+                hasConsumeableUsage: !!profileData.consumeable_usage,
+                hasVoucherUsage: !!profileData.voucher_usage,
+                hasJokerUsage: !!profileData.joker_usage,
+                hasHandUsage: !!profileData.hand_usage,
+                hasDeckUsage: !!profileData.deck_usage
             });
-            
+
             renderProfile();
             showNotification('Profile loaded successfully!', 'success');
         } catch (error) {
@@ -600,15 +641,13 @@ async function exportProfileJkr() {
         }
 
         showNotification('Exporting profile...', 'info');
-
         console.log('Exporting profile data...');
-        console.log('Keys being exported:', Object.keys(profileData));
+        console.log('Total keys being exported:', Object.keys(profileData).length);
+        console.log('All keys:', Object.keys(profileData));
 
         const jkrContent = await jsonToJkr(profileData);
 
-        const blob = jkrContent instanceof Uint8Array
-            ? new Blob([jkrContent], { type: 'application/octet-stream' })
-            : new Blob([jkrContent], { type: 'text/plain' });
+        const blob = new Blob([jkrContent], { type: 'application/octet-stream' });
 
         if (window.showSaveFilePicker) {
             try {
