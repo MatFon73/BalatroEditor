@@ -1,4 +1,4 @@
-# Balatro Editor
+# [Balatro Editor](https://matfon73.github.io/) - Mateo Fonseca
 
 <div align="center">
 
