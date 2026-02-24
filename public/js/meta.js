@@ -559,26 +559,35 @@ function loadImagesQuietly() {
         tryLoadImage(img, originalUrl, id, category);
     });
 }
-// Caché local de imágenes comprobadas
 const cacheExistencia = {};
 
-async function imageExists(url) {
-    if (cacheExistencia[url] !== undefined) return cacheExistencia[url];
-
-    try {
-        const res = await fetch(url, { method: 'HEAD' });
-        const ok = res.ok;
-        cacheExistencia[url] = ok;
-        return ok;
-    } catch {
-        cacheExistencia[url] = false;
-        return false;
-    }
-}
-
-async function tryLoadImage(imgElement, url, id, category) {
+function tryLoadImage(imgElement, url, id, category) {
     const baseSvg = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23333%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2212%22%3E?%3C/text%3E%3C/svg%3E';
-    let finalUrl = url;
+
+    if (cacheExistencia[url] === true) {
+        imgElement.src = url;
+        imgElement.removeAttribute('data-src');
+        return;
+    }
+    if (cacheExistencia[url] === false) {
+        if (category === 'jokers') {
+            const name = formatName(id);
+            const wikiName = name.replace(/ /g, '_');
+            const altUrl = url.includes('_Joker.png')
+                ? `https://balatrowiki.org/images/${wikiName}.png`
+                : `https://balatrowiki.org/images/${wikiName}_Joker.png`;
+            if (cacheExistencia[altUrl] === true) {
+                imgElement.src = altUrl;
+                imgElement.removeAttribute('data-src');
+                return;
+            }
+        }
+        imgElement.src = baseSvg;
+        imgElement.removeAttribute('data-src');
+        return;
+    }
+
+    imgElement.removeAttribute('data-src');
 
     if (category === 'jokers') {
         const name = formatName(id);
@@ -587,22 +596,32 @@ async function tryLoadImage(imgElement, url, id, category) {
             ? `https://balatrowiki.org/images/${wikiName}.png`
             : `https://balatrowiki.org/images/${wikiName}_Joker.png`;
 
-        // Verifica primero sin disparar ningún 404
-        if (await imageExists(url)) {
-            finalUrl = url;
-        } else if (await imageExists(altUrl)) {
-            finalUrl = altUrl;
-        } else {
-            finalUrl = baseSvg;
-        }
+        imgElement.onerror = () => {
+            cacheExistencia[url] = false;
+            imgElement.onerror = () => {
+                cacheExistencia[altUrl] = false;
+                imgElement.onerror = null;
+                imgElement.src = baseSvg;
+            };
+            imgElement.src = altUrl;
+        };
+        imgElement.onload = () => {
+            cacheExistencia[url] = true;
+            imgElement.onload = null;
+        };
     } else {
-        if (!(await imageExists(url))) {
-            finalUrl = baseSvg;
-        }
+        imgElement.onerror = () => {
+            cacheExistencia[url] = false;
+            imgElement.onerror = null;
+            imgElement.src = baseSvg;
+        };
+        imgElement.onload = () => {
+            cacheExistencia[url] = true;
+            imgElement.onload = null;
+        };
     }
 
-    imgElement.src = finalUrl;
-    imgElement.removeAttribute('data-src');
+    imgElement.src = url;
 }
 
 

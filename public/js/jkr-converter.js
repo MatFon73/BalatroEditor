@@ -5,13 +5,19 @@
  * Uses fengari-web for Lua parsing (Lua VM in JavaScript)
  */
 
+/**
+ * JKR Converter - Pure JavaScript Implementation
+ * Based on BalatroSaveEditor by TeddyHuang-00
+ * Requires pako.js for zlib compression
+ * Uses fengari-web for Lua parsing (Lua VM in JavaScript)
+ */
+
 function convertObjToLua(obj) {
     let result = "";
     
     for (let key in obj) {
         let value = obj[key];
         
-        // Process value
         if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
             value = convertObjToLua(value);
         } else if (typeof value === 'string') {
@@ -23,7 +29,9 @@ function convertObjToLua(obj) {
         }
         
         let luaKey = key;
-        if (typeof key === 'string') {
+        if (typeof key === 'string' && /^\d+$/.test(key)) {
+            luaKey = key;
+        } else if (typeof key === 'string') {
             luaKey = `"${key}"`;
         }
         
@@ -39,7 +47,6 @@ function parseObjFromLua(luaString) {
     }
     
     try {
-        // Replace Lua syntax with JavaScript
         let jsString = luaString
             .replace(/=true/g, ':true')
             .replace(/=false/g, ':false')
