@@ -1,4 +1,4 @@
-# [Balatro Editor](https://matfon73.github.io/) - Mateo Fonseca
+# [Balatro Editor](https://matfon73.github.io/BalatroEditor) - Mateo Fonseca
 
 <div align="center">
 
@@ -6,7 +6,7 @@
 ![Version](https://img.shields.io/badge/version-2.0.0-a78bfa?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-10b981?style=for-the-badge)
 
-**A minimalist and modern visual editor to modify your Balatro meta.jkr and profile.jkr files**
+**A minimalist and modern visual editor to modify your Balatro meta.jkr and profile.jkr files. Please note that the software is under development; there is no final version.**
 
 [Features](#features) • [Installation](#installation) • [Usage](#usage) • [Technologies](#technologies)
 
