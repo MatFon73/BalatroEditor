@@ -11,40 +11,30 @@ const REQUIRED_PROFILE_KEYS = [
 
 function validateProfileData(data) {
     const errors = [];
-
     if (data.unlocked || data.discovered || data.alerted) {
         return {
             valid: false,
             error: 'This is a meta.jkr file, not a profile.jkr file. Please select your profile.jkr file instead.'
         };
     }
-
     REQUIRED_PROFILE_KEYS.forEach(key => {
         if (!data.hasOwnProperty(key)) {
-            errors.push(`Missing required key: ${key}`);
+            errors.push('Missing required key: ' + key);
         }
     });
-
     if (data.career_stats && typeof data.career_stats !== 'object') {
         errors.push('career_stats must be an object');
     }
-
     if (data.high_scores && typeof data.high_scores !== 'object') {
         errors.push('high_scores must be an object');
     }
-
     if (data.progress) {
         if (!data.progress.challenges) errors.push('progress.challenges is missing');
         if (!data.progress.deck_stakes) errors.push('progress.deck_stakes is missing');
     }
-
     if (errors.length > 0) {
-        return {
-            valid: false,
-            error: 'Invalid profile.jkr structure:\n' + errors.join('\n')
-        };
+        return { valid: false, error: 'Invalid profile.jkr structure:\n' + errors.join('\n') };
     }
-
     return { valid: true };
 }
 
@@ -52,19 +42,10 @@ function isProfileMode() {
     return currentCategory === 'profile';
 }
 
-function formatProfileName(id) {
-    return id
-        .replace(/^(j_|c_|v_|b_|m_|e_|tag_|bl_|p_)/, '')
-        .replace(/_\d+$/, '')
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, l => l.toUpperCase());
-}
-
 function toggleEditMode() {
     editMode = !editMode;
     const editBtn = document.getElementById('toggle-edit-btn');
     const allInputs = document.querySelectorAll('.profile-input, .stat-value-input, .progress-input, .editable-stat');
-
     if (editMode) {
         editBtn.innerHTML = '<i class="fa-solid fa-lock-open"></i> Editing';
         editBtn.classList.add('editing');
@@ -78,7 +59,6 @@ function toggleEditMode() {
 
 function renderProfile() {
     const container = document.getElementById('content-container');
-
     if (!profileData) {
         container.innerHTML = `
             <div class="profile-empty">
@@ -99,7 +79,6 @@ function renderProfile() {
                 </label>
             </div>
         `;
-
         const profileInput = document.getElementById('import-profile-jkr');
         if (profileInput) {
             profileInput.addEventListener('change', (e) => {
@@ -126,92 +105,66 @@ function renderProfile() {
                     </button>
                 </div>
             </div>
-            
+
             <div class="profile-section">
                 <h3><i class="fa-solid fa-trophy"></i> High Scores</h3>
-                <div class="stats-grid">
-                    ${renderHighScores()}
-                </div>
+                <div class="stats-grid">${renderHighScores()}</div>
             </div>
-            
+
             <div class="profile-section">
                 <h3><i class="fa-solid fa-ranking-star"></i> Career Statistics</h3>
-                <div class="stats-grid">
-                    ${renderCareerStats()}
-                </div>
+                <div class="stats-grid">${renderCareerStats()}</div>
             </div>
-            
+
             <div class="profile-section">
                 <h3><i class="fa-solid fa-bars-progress"></i> Progress</h3>
-                <div class="progress-grid">
-                    ${renderProgress()}
-                </div>
+                <div class="progress-grid">${renderProgress()}</div>
             </div>
-            
+
             ${profileData.MEMORY ? `
             <div class="profile-section">
                 <h3><i class="fa-solid fa-clock-rotate-left"></i> Last Session</h3>
-                <div class="stats-grid">
-                    ${renderMemory()}
-                </div>
-            </div>
-            ` : ''}
-            
+                <div class="stats-grid">${renderMemory()}</div>
+            </div>` : ''}
+
             ${profileData.deck_usage ? `
             <div class="profile-section">
                 <h3><i class="fa-solid fa-clone"></i> Deck Statistics</h3>
-                <div class="deck-stakes-grid">
-                    ${renderDeckUsage()}
-                </div>
-            </div>
-            ` : ''}
-            
+                <div class="deck-stakes-grid">${renderDeckUsage()}</div>
+            </div>` : ''}
+
             ${profileData.joker_usage ? `
             <div class="profile-section">
                 <h3><i class="fa-solid fa-theater-masks"></i> Top 10 Jokers Used</h3>
-                <div class="table-container">
-                    ${renderTopJokers()}
-                </div>
-            </div>
-            ` : ''}
-            
+                <div class="table-container">${renderTopJokers()}</div>
+            </div>` : ''}
+
             ${profileData.hand_usage ? `
             <div class="profile-section">
                 <h3><i class="fa-solid fa-hand-back-fist"></i> Hand Types Played</h3>
-                <div class="stats-grid">
-                    ${renderHandUsage()}
-                </div>
-            </div>
-            ` : ''}
-            
+                <div class="stats-grid">${renderHandUsage()}</div>
+            </div>` : ''}
+
             ${profileData.consumeable_usage ? `
             <div class="profile-section">
                 <h3><i class="fa-solid fa-star-and-crescent"></i> Top 10 Consumables Used</h3>
-                <div class="table-container">
-                    ${renderTopConsumables()}
-                </div>
-            </div>
-            ` : ''}
-            
+                <div class="table-container">${renderTopConsumables()}</div>
+            </div>` : ''}
+
             ${profileData.challenge_progress ? `
             <div class="profile-section">
                 <h3><i class="fa-solid fa-list-check"></i> Challenge Progress</h3>
-                <div class="challenge-grid">
-                    ${renderChallengeProgress()}
-                </div>
-            </div>
-            ` : ''}
+                <div class="challenge-grid">${renderChallengeProgress()}</div>
+            </div>` : ''}
         </div>
     `;
-
     attachProfileEventListeners();
 }
 
 function renderHighScores() {
     if (!profileData.high_scores) return '<p>No high scores data</p>';
-
     const scores = profileData.high_scores;
-    const scoreItems = [
+    const items = [
         { key: 'furthest_ante', label: 'Highest Ante', icon: '<i class="fa-solid fa-meteor"></i>' },
         { key: 'furthest_round', label: 'Highest Round', icon: '<i class="fa-solid fa-rotate"></i>' },
         { key: 'hand', label: 'Best Hand', icon: '<i class="fa-solid fa-hand-back-fist"></i>' },
@@ -220,20 +173,16 @@ function renderHighScores() {
         { key: 'boss_streak', label: 'Boss Streak', icon: '<i class="fa-solid fa-skull"></i>' },
         { key: 'collection', label: 'Collection', icon: '<i class="fa-solid fa-layer-group"></i>' }
     ];
-
-    return scoreItems.map(item => {
+    return items.map(item => {
         const score = scores[item.key];
         if (!score) return '';
-
-        const value = score.amt || 0;
-
         return `
             <div class="stat-card">
                 <div class="stat-icon">${item.icon}</div>
                 <div class="stat-content">
                     <div class="stat-label">${item.label}</div>
-                    <input type="number" class="stat-value-input" data-path="high_scores.${item.key}.amt" value="${value}"${item.key === 'collection' ? ' max="340"' : ''} readonly>
-                    ${item.key === 'collection' ? `<span class="stat-total">/ ${score.tot || 340}</span>` : ''}
+                    <input type="number" class="stat-value-input" data-path="high_scores.${item.key}.amt" value="${score.amt || 0}"${item.key === 'collection' ? ' max="340"' : ''} readonly>
+                    ${item.key === 'collection' ? '<span class="stat-total">/ ' + (score.tot || 340) + '</span>' : ''}
                 </div>
             </div>
         `;
@@ -242,9 +191,8 @@ function renderHighScores() {
 
 function renderCareerStats() {
     if (!profileData.career_stats) return '<p>No career stats data</p>';
-
     const stats = profileData.career_stats;
-    const statItems = [
+    const items = [
         { key: 'c_wins', label: 'Wins', icon: '<i class="fa-solid fa-square-check"></i>' },
         { key: 'c_losses', label: 'Losses', icon: '<i class="fa-solid fa-square-xmark"></i>' },
         { key: 'c_rounds', label: 'Rounds Played', icon: '<i class="fa-solid fa-retweet"></i>' },
@@ -256,27 +204,20 @@ function renderCareerStats() {
         { key: 'c_jokers_sold', label: 'Jokers Sold', icon: '<i class="fa-solid fa-theater-masks"></i>' },
         { key: 'c_vouchers_bought', label: 'Vouchers Bought', icon: '<i class="fa-solid fa-ticket-simple"></i>' }
     ];
-
-    return statItems.map(item => {
-        const value = stats[item.key] || 0;
-
-        return `
-            <div class="stat-card">
-                <div class="stat-icon">${item.icon}</div>
-                <div class="stat-content">
-                    <div class="stat-label">${item.label}</div>
-                    <input type="number" class="stat-value-input" data-path="career_stats.${item.key}" value="${value}" readonly>
-                </div>
+    return items.map(item => `
+        <div class="stat-card">
+            <div class="stat-icon">${item.icon}</div>
+            <div class="stat-content">
+                <div class="stat-label">${item.label}</div>
+                <input type="number" class="stat-value-input" data-path="career_stats.${item.key}" value="${stats[item.key] || 0}" readonly>
             </div>
-        `;
-    }).join('');
+        </div>
+    `).join('');
 }
 
 function renderProgress() {
     if (!profileData.progress) return '<p>No progress data</p>';
-
     const progress = profileData.progress;
-
     return `
         <div class="progress-card">
             <div class="progress-item">
@@ -285,40 +226,37 @@ function renderProgress() {
                     <div class="progress-bar" style="width: ${(progress.challenges?.tally || 0) / (progress.challenges?.of || 20) * 100}%"></div>
                 </div>
                 <div class="progress-values">
-                    <input type="number" class="progress-input" data-path="progress.challenges.tally" value="${progress.challenges?.tally || 0}" max="20" readonly> / 
+                    <input type="number" class="progress-input" data-path="progress.challenges.tally" value="${progress.challenges?.tally || 0}" max="20" readonly> /
                     <span>${progress.challenges?.of || 20}</span>
                 </div>
             </div>
-            
             <div class="progress-item">
                 <span>Deck Stakes</span>
                 <div class="progress-bar-container">
                     <div class="progress-bar" style="width: ${(progress.deck_stakes?.tally || 0) / (progress.deck_stakes?.of || 120) * 100}%"></div>
                 </div>
                 <div class="progress-values">
-                    <input type="number" class="progress-input" data-path="progress.deck_stakes.tally" value="${progress.deck_stakes?.tally || 0}" max="120" readonly> / 
+                    <input type="number" class="progress-input" data-path="progress.deck_stakes.tally" value="${progress.deck_stakes?.tally || 0}" max="120" readonly> /
                     <span>${progress.deck_stakes?.of || 120}</span>
                 </div>
             </div>
-            
             <div class="progress-item">
                 <span>Joker Stickers</span>
                 <div class="progress-bar-container">
                     <div class="progress-bar" style="width: ${(progress.joker_stickers?.tally || 0) / (progress.joker_stickers?.of || 1200) * 100}%"></div>
                 </div>
                 <div class="progress-values">
-                    <input type="number" class="progress-input" data-path="progress.joker_stickers.tally" value="${progress.joker_stickers?.tally || 0}" max="1200" readonly> / 
+                    <input type="number" class="progress-input" data-path="progress.joker_stickers.tally" value="${progress.joker_stickers?.tally || 0}" max="1200" readonly> /
                     <span>${progress.joker_stickers?.of || 1200}</span>
                 </div>
             </div>
-            
             <div class="progress-item">
                 <span>Items Discovered</span>
                 <div class="progress-bar-container">
                     <div class="progress-bar" style="width: ${(progress.discovered?.tally || 0) / (progress.discovered?.of || 340) * 100}%"></div>
                 </div>
                 <div class="progress-values">
-                    <input type="number" class="progress-input" data-path="progress.discovered.tally" value="${progress.discovered?.tally || 0}" max="340" readonly> / 
+                    <input type="number" class="progress-input" data-path="progress.discovered.tally" value="${progress.discovered?.tally || 0}" max="340" readonly> /
                     <span>${progress.discovered?.of || 340}</span>
                 </div>
             </div>
@@ -328,7 +266,6 @@ function renderProgress() {
 
 function renderMemory() {
     if (!profileData.MEMORY) return '';
-
     const memory = profileData.MEMORY;
     return `
         <div class="stat-card">
@@ -350,7 +287,6 @@ function renderMemory() {
 
 function renderDeckUsage() {
     if (!profileData.deck_usage) return '';
-
     const decks = profileData.deck_usage;
     const deckNames = {
         'b_red': 'Red Deck', 'b_blue': 'Blue Deck', 'b_yellow': 'Yellow Deck',
@@ -359,33 +295,19 @@ function renderDeckUsage() {
         'b_checkered': 'Checkered Deck', 'b_zodiac': 'Zodiac Deck', 'b_painted': 'Painted Deck',
         'b_anaglyph': 'Anaglyph Deck', 'b_plasma': 'Plasma Deck', 'b_erratic': 'Erratic Deck'
     };
-
     return Object.keys(decks).map(deckId => {
         const deck = decks[deckId];
         const totalWins = Object.values(deck.wins || {}).reduce((a, b) => a + b, 0);
         const totalLosses = Object.values(deck.losses || {}).reduce((a, b) => a + b, 0);
         const winRate = totalWins + totalLosses > 0 ? (totalWins / (totalWins + totalLosses) * 100).toFixed(1) : 0;
-
         return `
             <div class="deck-card">
                 <h4><i class="fa-solid fa-clone"></i> ${deckNames[deckId] || deckId}</h4>
                 <div class="deck-stats">
-                    <div class="deck-stat">
-                        <span>Wins:</span>
-                        <span class="stat-value">${totalWins}</span>
-                    </div>
-                    <div class="deck-stat">
-                        <span>Losses:</span>
-                        <span class="stat-value">${totalLosses}</span>
-                    </div>
-                    <div class="deck-stat">
-                        <span>Win Rate:</span>
-                        <span class="stat-value">${winRate}%</span>
-                    </div>
-                    <div class="deck-stat">
-                        <span>Times Used:</span>
-                        <span class="stat-value">${deck.count || 0}</span>
-                    </div>
+                    <div class="deck-stat"><span>Wins:</span><span class="stat-value">${totalWins}</span></div>
+                    <div class="deck-stat"><span>Losses:</span><span class="stat-value">${totalLosses}</span></div>
+                    <div class="deck-stat"><span>Win Rate:</span><span class="stat-value">${winRate}%</span></div>
+                    <div class="deck-stat"><span>Times Used:</span><span class="stat-value">${deck.count || 0}</span></div>
                 </div>
             </div>
         `;
@@ -394,11 +316,9 @@ function renderDeckUsage() {
 
 function renderTopJokers() {
     if (!profileData.joker_usage) return '';
-
     const jokers = Object.entries(profileData.joker_usage)
         .sort((a, b) => b[1].count - a[1].count)
         .slice(0, 10);
-
     return `
         <table class="stats-table">
             <thead>
@@ -413,10 +333,10 @@ function renderTopJokers() {
             </thead>
             <tbody>
                 ${jokers.map(([id, data], index) => {
-        const wins = Object.values(data.wins || {}).reduce((a, b) => a + b, 0);
-        const losses = Object.values(data.losses || {}).reduce((a, b) => a + b, 0);
-        const winRate = wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : 0;
-        return `
+                    const wins = Object.values(data.wins || {}).reduce((a, b) => a + b, 0);
+                    const losses = Object.values(data.losses || {}).reduce((a, b) => a + b, 0);
+                    const winRate = wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : 0;
+                    return `
                         <tr>
                             <td>${index + 1}</td>
                             <td>${formatProfileName(id)}</td>
@@ -426,7 +346,7 @@ function renderTopJokers() {
                             <td>${winRate}%</td>
                         </tr>
                     `;
-    }).join('')}
+                }).join('')}
             </tbody>
         </table>
     `;
@@ -434,10 +354,7 @@ function renderTopJokers() {
 
 function renderHandUsage() {
     if (!profileData.hand_usage) return '';
-
-    const hands = Object.entries(profileData.hand_usage)
-        .sort((a, b) => b[1].count - a[1].count);
-
+    const hands = Object.entries(profileData.hand_usage).sort((a, b) => b[1].count - a[1].count);
     return hands.map(([handType, data]) => `
         <div class="stat-card">
             <div class="stat-icon"><i class="fa-solid fa-hand-back-fist"></i></div>
@@ -451,11 +368,9 @@ function renderHandUsage() {
 
 function renderTopConsumables() {
     if (!profileData.consumeable_usage) return '';
-
     const consumables = Object.entries(profileData.consumeable_usage)
         .sort((a, b) => b[1].count - a[1].count)
         .slice(0, 10);
-
     return `
         <table class="stats-table">
             <thead>
@@ -480,7 +395,6 @@ function renderTopConsumables() {
 
 function renderChallengeProgress() {
     if (!profileData.challenge_progress) return '';
-
     const completed = profileData.challenge_progress.completed || {};
     const challenges = [
         'c_five_card_1', 'c_mad_world_1', 'c_monolith_1', 'c_inflation_1', 'c_luxury_1',
@@ -488,7 +402,6 @@ function renderChallengeProgress() {
         'c_blast_off_1', 'c_knife_1', 'c_omelette_1', 'c_non_perishable_1', 'c_xray_1',
         'c_jokerless_1', 'c_bram_poker_1', 'c_city_1', 'c_rich_1', 'c_typecast_1'
     ];
-
     return challenges.map(challengeId => {
         const isCompleted = completed[challengeId] === true;
         return `
@@ -502,9 +415,7 @@ function renderChallengeProgress() {
 
 function attachProfileEventListeners() {
     const editBtn = document.getElementById('toggle-edit-btn');
-    if (editBtn) {
-        editBtn.addEventListener('click', toggleEditMode);
-    }
+    if (editBtn) editBtn.addEventListener('click', toggleEditMode);
 
     const playerNameInput = document.getElementById('player-name');
     if (playerNameInput) {
@@ -518,39 +429,21 @@ function attachProfileEventListeners() {
             const path = e.target.dataset.path;
             const value = parseFloat(e.target.value) || 0;
             setNestedValue(profileData, path, value);
-
-            if (path.startsWith('progress.')) {
-                renderProfile();
-            }
+            if (path.startsWith('progress.')) renderProfile();
         });
     });
 
-    // Challenge toggle functionality
     document.querySelectorAll('.challenge-item').forEach(item => {
         item.addEventListener('click', function () {
-            if (!editMode) return; // Only allow editing in edit mode
-
+            if (!editMode) return;
             const challengeId = this.dataset.challenge;
             const isCompleted = this.classList.contains('completed');
-
-            // Toggle completion status
-            if (!profileData.challenge_progress) {
-                profileData.challenge_progress = { completed: {} };
-            }
-            if (!profileData.challenge_progress.completed) {
-                profileData.challenge_progress.completed = {};
-            }
-
+            if (!profileData.challenge_progress) profileData.challenge_progress = { completed: {} };
+            if (!profileData.challenge_progress.completed) profileData.challenge_progress.completed = {};
             profileData.challenge_progress.completed[challengeId] = !isCompleted;
-
-            // Update UI
             this.classList.toggle('completed');
             const icon = this.querySelector('i');
-            if (icon) {
-                icon.className = !isCompleted ? 'fa-solid fa-square-check' : 'fa-solid fa-square';
-            }
-
-            // Update progress count
+            if (icon) icon.className = !isCompleted ? 'fa-solid fa-square-check' : 'fa-solid fa-square';
             const completedCount = Object.values(profileData.challenge_progress.completed).filter(v => v === true).length;
             if (profileData.progress && profileData.progress.challenges) {
                 profileData.progress.challenges.tally = completedCount;
@@ -559,71 +452,26 @@ function attachProfileEventListeners() {
     });
 
     const saveBtn = document.getElementById('save-profile');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', exportProfileJkr);
-    }
+    if (saveBtn) saveBtn.addEventListener('click', exportProfileJkr);
 }
 
-function setNestedValue(obj, path, value) {
-    const keys = path.split('.');
-    let current = obj;
-
-    for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) current[keys[i]] = {};
-        current = current[keys[i]];
-    }
-
-    current[keys[keys.length - 1]] = value;
-}
-
-// Now uses local jkr-converter.js instead of API
 async function importProfileJkr(file) {
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-        try {
-            showNotification('Loading profile...', 'info');
-
-            const arrayBuffer = event.target.result;
-            const uint8Array = new Uint8Array(arrayBuffer);
-
-            const jsonData = await jkrToJson(uint8Array);
-
-            console.log('Profile data loaded, validating...', Object.keys(jsonData));
-
-            const validation = validateProfileData(jsonData);
-            if (!validation.valid) {
-                showNotification(validation.error, 'error');
-                console.error('Validation failed:', validation.error);
-                console.error('Loaded data keys:', Object.keys(jsonData));
-                return;
-            }
-
-            // CRITICAL: Store the COMPLETE data, don't filter anything
-            profileData = JSON.parse(JSON.stringify(jsonData));
-
-            console.log('✓ Profile loaded and validated successfully');
-            console.log('Profile structure:', {
-                name: profileData.name,
-                totalKeys: Object.keys(profileData).length,
-                allKeys: Object.keys(profileData),
-                hasCareerStats: !!profileData.career_stats,
-                hasHighScores: !!profileData.high_scores,
-                hasProgress: !!profileData.progress,
-                hasConsumeableUsage: !!profileData.consumeable_usage,
-                hasVoucherUsage: !!profileData.voucher_usage,
-                hasJokerUsage: !!profileData.joker_usage,
-                hasHandUsage: !!profileData.hand_usage,
-                hasDeckUsage: !!profileData.deck_usage
-            });
-
-            renderProfile();
-            showNotification('Profile loaded successfully!', 'success');
-        } catch (error) {
-            console.error('Error loading profile:', error);
-            showNotification('Error loading profile: ' + error.message, 'error');
+    try {
+        showNotification('Loading profile...', 'info');
+        const arrayBuffer = await readFileAsArrayBuffer(file);
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const jsonData = await jkrToJson(uint8Array);
+        const validation = validateProfileData(jsonData);
+        if (!validation.valid) {
+            showNotification(validation.error, 'error');
+            return;
         }
-    };
-    reader.readAsArrayBuffer(file);
+        profileData = JSON.parse(JSON.stringify(jsonData));
+        renderProfile();
+        showNotification('Profile loaded successfully!', 'success');
+    } catch (error) {
+        showNotification('Error loading profile: ' + error.message, 'error');
+    }
 }
 
 async function exportProfileJkr() {
@@ -632,64 +480,16 @@ async function exportProfileJkr() {
             showNotification('No profile data to export', 'error');
             return;
         }
-
         const validation = validateProfileData(profileData);
         if (!validation.valid) {
             showNotification('Cannot export: ' + validation.error, 'error');
-            console.error('Export validation failed:', validation.error);
             return;
         }
-
         showNotification('Exporting profile...', 'info');
-        console.log('Exporting profile data...');
-        console.log('Total keys being exported:', Object.keys(profileData).length);
-        console.log('All keys:', Object.keys(profileData));
-
         const jkrContent = await jsonToJkr(profileData);
-
         const blob = new Blob([jkrContent], { type: 'application/octet-stream' });
-
-        if (window.showSaveFilePicker) {
-            try {
-                const fileHandle = await window.showSaveFilePicker({
-                    suggestedName: 'profile.jkr',
-                    types: [{
-                        description: 'Balatro Profile File',
-                        accept: { 'application/octet-stream': ['.jkr'] }
-                    }]
-                });
-                const writable = await fileHandle.createWritable();
-                await writable.write(blob);
-                await writable.close();
-                showNotification('Profile exported successfully!', 'success');
-            } catch (err) {
-                if (err.name === 'AbortError') {
-                    showNotification('Export cancelled', 'info');
-                } else {
-                    throw err;
-                }
-            }
-        } else {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'profile.jkr';
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            setTimeout(() => {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 100);
-            showNotification('Profile exported successfully!', 'success');
-        }
+        await exportBlob(blob, 'profile.jkr', 'Profile exported successfully!');
     } catch (error) {
-        console.error('Error exporting profile:', error);
-        console.error('Error details:', {
-            message: error.message,
-            stack: error.stack,
-            profileData: profileData ? Object.keys(profileData) : 'null'
-        });
         showNotification('Error exporting profile: ' + error.message, 'error');
     }
 }

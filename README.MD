@@ -107,9 +107,11 @@ BalatroEditor/
 │   │   ├── style.css
 │   │   └── profile.css
 │   └── js/
-│       ├── meta.js
-│       ├── profile.js
-│       └── jkr-converter.js    ← Client-side JKR processing
+│       ├── jkr-converter.js   ← Lua ↔ JKR converter
+│       ├── utils.js           ← Shared utilities (notifications, export, debounce)
+│       ├── image-loader.js    ← Multi-source image loader with localStorage cache
+│       ├── meta.js            ← Meta.jkr editor
+│       └── profile.js         ← Profile.jkr editor
 ├── favicon.ico
 ├── index.html
 ├── LICENSE
@@ -274,6 +276,16 @@ Progress bars update automatically as you edit values.
 - **Google Fonts**: Inter font family
 - **Pako**: 2.1.0 - Zlib compression/decompression for JKR files
 
+### Recent Improvements
+
+- **Multi-CDN Image Loading**: Automatic fallback between multiple URL patterns for Balatro Wiki images
+- **Persistent Image Cache**: Successfully loaded images are cached in localStorage — no more re-downloading
+- **Silent Error Handling**: Image load failures are handled silently without console noise
+- **Debounced Search**: Real-time search is now debounced (200ms) for better performance
+- **Safe Lua Parser**: Replaced `new Function()` with a recursive descent parser for security
+- **Shared Utilities Module**: Extracted common code into `utils.js` (notifications, export, formatName, debounce)
+- **Dedicated Image Loader**: Separated image loading logic into `image-loader.js` for maintainability
+
 ---
 
 ## Technical Features
@@ -313,9 +325,11 @@ Progress bars update automatically as you edit values.
 **Problem**: Card images show placeholder icons
 
 **Solution**: 
-- This is normal - images are loaded from Balatro Wiki on-demand
-- Check your internet connection
-- Some cards may not have images available
+- Images are loaded from Balatro Wiki with automatic fallback between URL patterns
+- Successfully loaded images are cached in your browser (localStorage) for future sessions
+- If images fail, the loader silently tries alternative naming conventions before showing a placeholder
+- Check your internet connection if no images load at all
+- Some cards may not have images available on the wiki
 
 ### Import/Export Not Working
 

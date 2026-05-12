@@ -422,6 +422,13 @@
     font-size: 14px;
 }
 
+.profile-empty code {
+    word-break: break-all;
+    font-size: 11px;
+    display: inline-block;
+    max-width: 100%;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .profile-header {

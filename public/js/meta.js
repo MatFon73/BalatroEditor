@@ -1,28 +1,7 @@
 let metaData = {
-    "unlocked": {},
-    "discovered": {},
-    "alerted": {}
-};
-
-const categories = {
-    jokers: { prefix: 'j_', name: 'Jokers' },
-    tarots: { prefix: 'c_', name: 'Tarots', filter: ['fool', 'magician', 'high_priestess', 'empress', 'emperor', 'heirophant', 'lovers', 'chariot', 'justice', 'hermit', 'wheel_of_fortune', 'strength', 'hanged_man', 'death', 'temperance', 'devil', 'tower', 'star', 'moon', 'sun', 'judgement', 'world'] },
-    planets: { prefix: 'c_', name: 'Planets', filter: ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'planet_x', 'ceres', 'eris'] },
-    spectrals: { prefix: 'c_', name: 'Spectrals', filter: ['familiar', 'grim', 'incantation', 'talisman', 'aura', 'wraith', 'sigil', 'ouija', 'ectoplasm', 'immolate', 'ankh', 'deja_vu', 'hex', 'trance', 'medium', 'cryptid', 'soul', 'black_hole'] },
-    vouchers: { prefix: 'v_', name: 'Vouchers' },
-    decks: { prefix: 'b_', name: 'Decks' },
-    modifiers: {
-        name: 'Card Modifiers',
-        isMultiple: true,
-        subcategories: [
-            { prefix: 'm_', name: 'Enhancements' },
-            { prefix: 'e_', name: 'Editions' },
-            { prefix: 'soul', name: 'Seals', isSeal: true }
-        ]
-    },
-    tags: { prefix: 'tag_', name: 'Tags' },
-    blinds: { prefix: 'bl_', name: 'Blinds' },
-    profile: { name: 'Profile', isProfile: true }
+    unlocked: {},
+    discovered: {},
+    alerted: {}
 };
 
 let currentCategory = 'jokers';
@@ -36,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             renderCategory(tab.dataset.category);
-
             if (window.innerWidth <= 768) {
                 document.getElementById('sidebar').classList.remove('active');
             }
@@ -44,14 +22,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const searchInput = document.getElementById('search-input');
-    searchInput.addEventListener('input', (e) => {
+    searchInput.addEventListener('input', debounce((e) => {
         searchTerm = e.target.value;
         renderCategory(currentCategory);
-    });
+    }, 200));
 
     const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
     const sidebar = document.getElementById('sidebar');
-
     mobileMenuToggle.addEventListener('click', () => {
         sidebar.classList.toggle('active');
     });
@@ -70,187 +47,70 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const exportJkrBtn = document.getElementById('export-jkr');
     if (exportJkrBtn) {
-        exportJkrBtn.addEventListener('click', () => {
-            console.log('Export JKR button clicked');
-            exportJkr();
-        });
+        exportJkrBtn.addEventListener('click', exportJkr);
     }
 
     const importJkrInput = document.getElementById('import-jkr');
     if (importJkrInput) {
         importJkrInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file) {
-                console.log('Importing JKR file:', file.name);
-                importJkr(file);
-            }
+            if (file) importJkr(file);
         });
     }
-    window.addEventListener('error', function (e) {
-        if (e.target.tagName === 'IMG') {
-            e.preventDefault();
-            return false;
-        }
-    }, true);
 });
-
-// Now uses local jkr-converter.js instead of API
-async function jsonToJkr(jsonData) {
-    return await compressToJkr(jsonData);
-}
-
-async function jkrToJson(jkrContent) {
-    return await decompressFromJkr(jkrContent);
-}
 
 async function exportJkr() {
     try {
         if (!metaData.unlocked || !metaData.discovered || !metaData.alerted) {
             throw new Error('metaData structure is invalid');
         }
-
         showNotification('Converting to JKR...', 'info');
-
         const jkrContent = await jsonToJkr(metaData);
-
         const blob = new Blob([jkrContent], { type: 'application/octet-stream' });
-
-        if (window.showSaveFilePicker) {
-            try {
-                const fileHandle = await window.showSaveFilePicker({
-                    suggestedName: 'meta.jkr',
-                    types: [{
-                        description: 'Balatro Save File',
-                        accept: { 'application/octet-stream': ['.jkr'] }
-                    }]
-                });
-                const writable = await fileHandle.createWritable();
-                await writable.write(blob);
-                await writable.close();
-                showNotification('meta.jkr exported successfully!', 'success');
-            } catch (err) {
-                if (err.name === 'AbortError') {
-                    showNotification('Export cancelled', 'info');
-                } else {
-                    throw err;
-                }
-            }
-        } else {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'meta.jkr';
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            setTimeout(() => {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 100);
-            showNotification('meta.jkr exported successfully!', 'success');
-        }
+        await exportBlob(blob, 'meta.jkr', 'meta.jkr exported successfully!');
     } catch (error) {
-        console.error('Export error:', error);
         showNotification('Error exporting: ' + error.message, 'error');
     }
 }
+
 async function importJkr(file) {
     if (file.name !== 'meta.jkr' && file.name !== '1') {
         showNotification('Please select a valid meta.jkr file', 'error');
         return;
     }
+    try {
+        showNotification('Converting JKR...', 'info');
+        const arrayBuffer = await readFileAsArrayBuffer(file);
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const jsonData = await jkrToJson(uint8Array);
 
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-        try {
-            showNotification('Converting JKR...', 'info');
-            const arrayBuffer = event.target.result;
-            const uint8Array = new Uint8Array(arrayBuffer);
-            const jsonData = await jkrToJson(uint8Array);
-
-            console.log('=== RAW JKR DATA ===');
-            console.log('Full jsonData:', jsonData);
-
-            console.log('Has unlocked?', jsonData.hasOwnProperty('unlocked'));
-            console.log('Has discovered?', jsonData.hasOwnProperty('discovered'));
-            console.log('Has alerted?', jsonData.hasOwnProperty('alerted'));
-
-            if (jsonData.unlocked && jsonData.discovered) {
-                const unlockedCount = Object.keys(jsonData.unlocked).filter(k => jsonData.unlocked[k] === true).length;
-                const discoveredOnlyCount = Object.keys(jsonData.discovered).filter(k =>
-                    jsonData.discovered[k] === true && jsonData.unlocked[k] !== true
-                ).length;
-                const totalDiscovered = Object.keys(jsonData.discovered).filter(k => jsonData.discovered[k] === true).length;
-
-                console.log('Import counts:', {
-                    unlocked: unlockedCount,
-                    discoveredOnly: discoveredOnlyCount,
-                    totalDiscovered: totalDiscovered
-                });
-
-                console.log('Sample discovered items:', Object.keys(jsonData.discovered).slice(0, 10).map(k => ({
-                    id: k,
-                    discovered: jsonData.discovered[k],
-                    unlocked: jsonData.unlocked[k]
-                })));
-            }
-
-            metaData.unlocked = jsonData.unlocked || {};
-            metaData.discovered = jsonData.discovered || {};
-            metaData.alerted = jsonData.alerted || {};
-
-            console.log('After assignment:', {
-                unlockedKeys: Object.keys(metaData.unlocked).length,
-                discoveredKeys: Object.keys(metaData.discovered).length,
-                alertedKeys: Object.keys(metaData.alerted).length
-            });
-
-            renderCategory(currentCategory);
-            showNotification('meta.jkr imported successfully!', 'success');
-        } catch (error) {
-            console.error('Import error:', error);
-            showNotification('Error importing JKR: ' + error.message, 'error');
+        if (!jsonData.unlocked || !jsonData.discovered) {
+            showNotification('Invalid meta.jkr: missing unlocked/discovered data', 'error');
+            return;
         }
-    };
-    reader.readAsArrayBuffer(file);
+
+        metaData.unlocked = jsonData.unlocked || {};
+        metaData.discovered = jsonData.discovered || {};
+        metaData.alerted = jsonData.alerted || {};
+
+        renderCategory(currentCategory);
+        showNotification('meta.jkr imported successfully!', 'success');
+    } catch (error) {
+        showNotification('Error importing JKR: ' + error.message, 'error');
+    }
 }
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-    notification.textContent = message;
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 16px 24px;
-        background: ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--accent-primary)'};
-        color: white;
-        border-radius: 10px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        z-index: 9999;
-        animation: slideIn 0.3s ease;
-        font-weight: 500;
-    `;
-    document.body.appendChild(notification);
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    }, 3000);
-}
+
 async function loadMetaJSON() {
     try {
         showSkeletonLoading();
         const response = await fetch('data/meta.json');
         const data = await response.json();
-
         metaData.unlocked = data.unlocked || {};
         metaData.discovered = data.discovered || {};
         metaData.alerted = data.alerted || {};
-
         await new Promise(resolve => setTimeout(resolve, 300));
         renderCategory(currentCategory);
     } catch (error) {
-        console.error('Error loading meta.json:', error);
         document.getElementById('content-container').innerHTML = `
             <div class="loading" style="color: var(--danger);">
                 Error loading meta.json<br>
@@ -259,6 +119,7 @@ async function loadMetaJSON() {
         `;
     }
 }
+
 function showSkeletonLoading() {
     const container = document.getElementById('content-container');
     const skeletonCards = Array(12).fill(0).map(() => `
@@ -282,26 +143,16 @@ function showSkeletonLoading() {
                     </div>
                 </div>
             </div>
-            <div class="skeleton-grid">
-                ${skeletonCards}
-            </div>
+            <div class="skeleton-grid">${skeletonCards}</div>
         </div>
     `;
 }
-function formatName(id) {
-    return id
-        .replace(/^(j_|c_|v_|b_|m_|e_|tag_|bl_|p_)/, '')
-        .replace(/_/g, ' ')
-        .split(' ')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-}
+
 function updateStats() {
     const items = getItemsForCategory(currentCategory);
     const unlocked = items.filter(item => metaData.unlocked[item] === true).length;
     const discovered = items.filter(item => metaData.discovered[item] === true && metaData.unlocked[item] !== true).length;
     const total = items.length;
-
     const statsContainer = document.querySelector('.stats');
     if (statsContainer) {
         statsContainer.innerHTML = `
@@ -316,127 +167,10 @@ function updateStats() {
         `;
     }
 }
-function getImageUrl(id, category) {
-    const name = formatName(id);
-    const wikiName = name.replace(/ /g, '_');
-    const cleanId = id.replace(/^(j_|v_|c_|m_|e_|bl_|tag_)/, '');
 
-    const baseUrl = 'https://balatrowiki.org/images/';
-    const buildUrl = (file) => `${baseUrl}${file}`;
-
-    const specialCasesMap = {
-        jokers: {
-            'joker': 'Joker.png',
-            'stencil': 'Joker_Stencil.png',
-            'trousers': 'Spare_Trousers.png',
-            'mime': 'Mime.png',
-            'cloud_9': 'Cloud_9.png',
-            'mail': 'Mail-In_Rebate.png',
-            'four_fingers': 'Four_Fingers.png',
-            'seance': 'Séance.png',
-            'mr_bones': 'Mr._Bones.png',
-            'caino': 'Canio.png',
-            'chaos': 'Chaos_the_Clown.png',
-            'drivers_license': "Driver's_License.png",
-            'baseball': 'Baseball_Card.png',
-            'business': 'Business_Card.png',
-            'trading': 'Trading_Card.png',
-            'flash': 'Flash_Card.png',
-            'gift': 'Gift_Card.png',
-            'ceremonial': 'Ceremonial_Dagger.png',
-            'perkeo': 'Perkeo.png',
-            'chicot': 'Chicot.png',
-            'triboulet': 'Triboulet.png',
-            'yorick': 'Yorick.png',
-            'idol': 'The_Idol.png',
-            'family': 'The_Family.png',
-            'order': 'The_Order.png',
-            'tribe': 'The_Tribe.png',
-            'delayed_grat': 'Delayed_Gratification.png',
-            'gluttenous_joker': 'Gluttonous_Joker.png',
-            'duo': 'The_Duo.png',
-            'trio': 'The_Trio.png',
-            'oops': 'Oops!_All_6s.png',
-            'dna': 'DNA.png',
-            'hit_the_road': 'Hit_the_Road.png',
-            'ride_the_bus': 'Ride_the_Bus.png',
-            'riff_raff': 'Riff-Raff.png',
-            'ring_master': 'Showman.png',
-            'selzer': 'Seltzer.png',
-            'smiley': 'Smiley_Face.png',
-            'sock_and_buskin': 'Sock_and_Buskin.png',
-            'shoot_the_moon': 'Shoot_the_Moon.png',
-            'ticket': 'Golden_Ticket.png',
-            'to_the_moon': 'To_the_Moon.png',
-            'todo_list': 'To_Do_List.png'
-        },
-        vouchers: {
-            'directors_cut': "Director's_Cut.png",
-            'overstock_norm': 'Overstock.png'
-        },
-        planets: { 'soul': 'The_Soul.png' },
-        spectrals: { 'soul': 'The_Soul.png' },
-        modifiers: {
-            'negative': 'Joker_(Negative).png',
-            'base': 'Joker.png'
-        },
-        blinds: {
-            'small': 'Small_Blind.png',
-            'big': 'Big_Blind.png',
-            'final_acorn': 'Amber_Acorn.png',
-            'final_bell': 'Verdant_Leaf.png',
-            'final_heart': 'Violet_Vessel.png',
-            'final_leaf': 'Crimson_Heart.png',
-            'final_vessel': 'Cerulean_Bell.png'
-        },
-        tags: {
-            'top_up': 'Top-up_Tag.png',
-            'd_six': 'D6_Tag.png',
-            'skip': 'Speed_Tag.png',
-            'holo': 'Holographic_Tag.png'
-        },
-        tarots: {
-            'death': 'Death.png',
-            'heirophant': 'The_Hierophant.png',
-            'justice': 'Justice.png',
-            'strength': 'Strength.png',
-            'temperance': 'Temperance.png',
-            'wheel_of_fortune': 'The_Wheel_of_Fortune.png',
-            'judgement': 'Judgement.png'
-        }
-    };
-
-    if (specialCasesMap[category]?.[cleanId]) {
-        return buildUrl(specialCasesMap[category][cleanId]);
-    }
-    switch (category) {
-        case 'jokers':
-            return buildUrl(`${wikiName}_Joker.png`);
-        case 'vouchers':
-            return buildUrl(`${wikiName}.png`);
-        case 'decks':
-            return buildUrl(`${wikiName}_Deck.png`);
-        case 'planets':
-        case 'spectrals':
-            return buildUrl(`${wikiName}.png`);
-        case 'modifiers':
-        case (id.startsWith('m_') || id.startsWith('e_') ? 'extra' : ''):
-            if (id.startsWith('m_')) return buildUrl(`${wikiName}_Card.png`);
-            return buildUrl(`${wikiName}.png`);
-        case 'blinds':
-            return buildUrl(`The_${wikiName}.png`);
-        case 'tags':
-            return buildUrl(`${wikiName}_Tag.png`);
-        case 'tarots':
-            return buildUrl(`The_${wikiName}.png`);
-        default:
-            return buildUrl(`${wikiName}.png`);
-    }
-}
 function getItemsForCategory(category) {
-    const cat = categories[category];
+    const cat = CATEGORIES[category];
     const items = [];
-
     if (cat.isMultiple) {
         cat.subcategories.forEach(subcat => {
             for (let key in metaData.unlocked) {
@@ -449,33 +183,27 @@ function getItemsForCategory(category) {
         });
         return [...new Set(items)].sort();
     }
-
     const allKeys = new Set([
         ...Object.keys(metaData.unlocked || {}),
         ...Object.keys(metaData.discovered || {}),
         ...Object.keys(metaData.alerted || {})
     ]);
-
     for (let key of allKeys) {
         if (cat.filter) {
             const itemName = key.replace(cat.prefix, '');
             if (cat.filter.includes(itemName)) {
                 items.push(key);
             }
-        }
-        else if (cat.isSeal && key === 'soul') {
+        } else if (cat.isSeal && key === 'soul') {
             items.push(key);
-        }
-        else if (key.startsWith(cat.prefix) && !key.startsWith('p_')) {
+        } else if (key.startsWith(cat.prefix) && !key.startsWith('p_')) {
             const itemName = key.replace(cat.prefix, '');
             if (category === 'tarots' || category === 'planets' || category === 'spectrals') {
                 continue;
             }
-
             if (cat.prefix === 'c_') {
                 const planetCards = ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'planet_x', 'ceres', 'eris'];
                 const spectralCards = ['familiar', 'grim', 'incantation', 'talisman', 'aura', 'wraith', 'sigil', 'ouija', 'ectoplasm', 'immolate', 'ankh', 'deja_vu', 'hex', 'trance', 'medium', 'cryptid', 'soul', 'black_hole'];
-
                 if (!planetCards.includes(itemName) && !spectralCards.includes(itemName)) {
                     items.push(key);
                 }
@@ -486,10 +214,10 @@ function getItemsForCategory(category) {
     }
     return [...new Set(items)].sort();
 }
+
 function renderCategory(category) {
     currentCategory = category;
     const container = document.getElementById('content-container');
-
     if (category === 'profile') {
         if (typeof renderProfile === 'function') {
             renderProfile();
@@ -503,26 +231,21 @@ function renderCategory(category) {
         }
         return;
     }
-
     showCategorySkeletonLoading(category);
-
+    const skeletonStart = Date.now();
     setTimeout(() => {
         let items = getItemsForCategory(category);
-
         if (searchTerm) {
-            items = items.filter(item => {
-                const name = formatName(item).toLowerCase();
-                return name.includes(searchTerm.toLowerCase());
-            });
+            const term = searchTerm.toLowerCase();
+            items = items.filter(item => formatName(item).toLowerCase().includes(term));
         }
-
-        const cat = categories[category];
+        const cat = CATEGORIES[category];
         const allItems = getItemsForCategory(category);
         const unlocked = allItems.filter(item => metaData.unlocked[item] === true).length;
         const discovered = allItems.filter(item => metaData.discovered[item] === true && metaData.unlocked[item] !== true).length;
         const total = allItems.length;
 
-        container.innerHTML = `
+        const html = `
             <div class="content-section active">
                 <div class="category-header">
                     <h2>${cat.name}</h2>
@@ -543,98 +266,34 @@ function renderCategory(category) {
             </div>
         `;
 
-        document.querySelectorAll('.item-card').forEach(card => {
-            card.addEventListener('click', () => toggleItem(card.dataset.id));
-        });
+        const elapsed = Date.now() - skeletonStart;
+        const remaining = Math.max(0, 1000 - elapsed);
 
-        loadImagesQuietly();
-    }, 150);
-}
-function loadImagesQuietly() {
-    document.querySelectorAll('img[data-src]').forEach(img => {
-        const originalUrl = img.dataset.src;
-        const id = img.dataset.id;
-        const category = img.dataset.category;
+        const applyRender = () => {
+            container.innerHTML = html;
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.addEventListener('click', () => toggleItem(card.dataset.id));
+            });
+            loadImagesInContainer(container);
+        };
 
-        tryLoadImage(img, originalUrl, id, category);
-    });
-}
-const cacheExistencia = {};
-
-function tryLoadImage(imgElement, url, id, category) {
-    const baseSvg = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23333%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23666%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2212%22%3E?%3C/text%3E%3C/svg%3E';
-
-    if (cacheExistencia[url] === true) {
-        imgElement.src = url;
-        imgElement.removeAttribute('data-src');
-        return;
-    }
-    if (cacheExistencia[url] === false) {
-        if (category === 'jokers') {
-            const name = formatName(id);
-            const wikiName = name.replace(/ /g, '_');
-            const altUrl = url.includes('_Joker.png')
-                ? `https://balatrowiki.org/images/${wikiName}.png`
-                : `https://balatrowiki.org/images/${wikiName}_Joker.png`;
-            if (cacheExistencia[altUrl] === true) {
-                imgElement.src = altUrl;
-                imgElement.removeAttribute('data-src');
-                return;
-            }
+        if (remaining > 0) {
+            setTimeout(applyRender, remaining);
+        } else {
+            applyRender();
         }
-        imgElement.src = baseSvg;
-        imgElement.removeAttribute('data-src');
-        return;
-    }
-
-    imgElement.removeAttribute('data-src');
-
-    if (category === 'jokers') {
-        const name = formatName(id);
-        const wikiName = name.replace(/ /g, '_');
-        const altUrl = url.includes('_Joker.png')
-            ? `https://balatrowiki.org/images/${wikiName}.png`
-            : `https://balatrowiki.org/images/${wikiName}_Joker.png`;
-
-        imgElement.onerror = () => {
-            cacheExistencia[url] = false;
-            imgElement.onerror = () => {
-                cacheExistencia[altUrl] = false;
-                imgElement.onerror = null;
-                imgElement.src = baseSvg;
-            };
-            imgElement.src = altUrl;
-        };
-        imgElement.onload = () => {
-            cacheExistencia[url] = true;
-            imgElement.onload = null;
-        };
-    } else {
-        imgElement.onerror = () => {
-            cacheExistencia[url] = false;
-            imgElement.onerror = null;
-            imgElement.src = baseSvg;
-        };
-        imgElement.onload = () => {
-            cacheExistencia[url] = true;
-            imgElement.onload = null;
-        };
-    }
-
-    imgElement.src = url;
+    }, 300);
 }
-
 
 function showCategorySkeletonLoading(category) {
     const container = document.getElementById('content-container');
-    const cat = categories[category];
+    const cat = CATEGORIES[category];
     const skeletonCards = Array(8).fill(0).map(() => `
         <div class="skeleton-card">
             <div class="skeleton-image"></div>
             <div class="skeleton-text"></div>
         </div>
     `).join('');
-
     container.innerHTML = `
         <div class="content-section active">
             <div class="category-header">
@@ -650,41 +309,62 @@ function showCategorySkeletonLoading(category) {
                     </div>
                 </div>
             </div>
-            <div class="skeleton-grid">
-                ${skeletonCards}
-            </div>
+            <div class="skeleton-grid">${skeletonCards}</div>
         </div>
     `;
 }
+
 function getItemState(id) {
     const unlocked = metaData.unlocked[id];
     const discovered = metaData.discovered[id];
-
-    if (unlocked === true) {
-        return 'unlocked';
-    } else if (discovered === true && unlocked !== true) {
-        return 'discovered';
-    } else {
-        return 'locked';
-    }
+    if (unlocked === true) return 'unlocked';
+    if (discovered === true && unlocked !== true) return 'discovered';
+    return 'locked';
 }
+
 function createItemCard(id, category) {
     const state = getItemState(id);
     const name = formatName(id);
     const imgUrl = getImageUrl(id, category);
-
     return `
         <div class="item-card ${state}" data-id="${id}">
             <div class="status-badge"></div>
-            <img data-src="${imgUrl}" data-id="${id}" data-category="${category}" alt="${name}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23333' width='100' height='100'/%3E%3C/svg%3E">
+            <img data-src="${imgUrl}" data-id="${id}" data-category="${category}" alt="${name}" loading="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23333' width='100' height='100'/%3E%3C/svg%3E">
             <div class="item-name">${name}</div>
             <div class="state-indicator">${state === 'unlocked' ? 'Unlocked' : state === 'discovered' ? 'Discovered' : 'Locked'}</div>
         </div>
     `;
 }
+
+function getImageUrl(id, category) {
+    const exceptionalUrl = getExceptionalImageUrl(id, category);
+    if (exceptionalUrl) return exceptionalUrl;
+
+    const wikiName = formatName(id).replace(/ /g, '_');
+    const cleanId = id.replace(/^(j_|v_|c_|m_|e_|bl_|tag_)/, '');
+    const baseUrl = 'https://balatrowiki.org/images/';
+
+    const specialFile = getSpecialFileName(id, category);
+    if (specialFile) return baseUrl + specialFile;
+
+    switch (category) {
+        case 'jokers': return baseUrl + wikiName + '_Joker.png';
+        case 'vouchers': return baseUrl + wikiName + '.png';
+        case 'decks': return baseUrl + wikiName + '_Deck.png';
+        case 'planets':
+        case 'spectrals':
+        case 'tarots': return baseUrl + 'The_' + wikiName + '.png';
+        case 'modifiers':
+            if (id.startsWith('m_')) return baseUrl + wikiName + '_Card.png';
+            return baseUrl + wikiName + '.png';
+        case 'blinds': return baseUrl + 'The_' + wikiName + '.png';
+        case 'tags': return baseUrl + wikiName + '_Tag.png';
+        default: return baseUrl + wikiName + '.png';
+    }
+}
+
 function toggleItem(id) {
     const currentState = getItemState(id);
-
     if (currentState === 'locked') {
         metaData.discovered[id] = true;
         metaData.unlocked[id] = false;
@@ -697,24 +377,20 @@ function toggleItem(id) {
         metaData.unlocked[id] = false;
         metaData.alerted[id] = false;
     }
-
     const card = document.querySelector(`[data-id="${id}"]`);
     if (card) {
         const newState = getItemState(id);
-
         card.classList.remove('locked', 'discovered', 'unlocked');
         card.classList.add(newState);
-
         const stateIndicator = card.querySelector('.state-indicator');
         if (stateIndicator) {
             stateIndicator.textContent = newState === 'unlocked' ? 'Unlocked' :
-                newState === 'discovered' ? 'Discovered' :
-                    'Locked';
+                newState === 'discovered' ? 'Discovered' : 'Locked';
         }
     }
-
     updateStats();
 }
+
 function unlockAll() {
     for (let key in metaData.unlocked) {
         metaData.unlocked[key] = true;
@@ -723,6 +399,7 @@ function unlockAll() {
     }
     renderCategory(currentCategory);
 }
+
 function lockAll() {
     for (let key in metaData.unlocked) {
         metaData.unlocked[key] = false;
