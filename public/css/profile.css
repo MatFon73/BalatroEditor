@@ -394,6 +394,12 @@
     border-radius: 8px;
     border: 2px solid var(--border);
     transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.challenge-item:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
 }
 
 .challenge-item.completed {
@@ -420,6 +426,13 @@
     margin-left: 5px;
     color: var(--text-secondary);
     font-size: 14px;
+}
+
+.profile-empty code {
+    word-break: break-all;
+    font-size: 11px;
+    display: inline-block;
+    max-width: 100%;
 }
 
 /* Mobile Responsive */
