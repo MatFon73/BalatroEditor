@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Balatro Editor</title>
+    <title data-i18n="app.title">Balatro Editor</title>
 
     <link rel="stylesheet" href="public/css/style.css">
     <link rel="stylesheet" href="public/css/profile.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" crossorigin="anonymous">
 
     <meta property="og:title" content="Balatro Editor">
-    <meta property="og:description" content="Balatro mod that allows editing the profile and joker collection.">
+    <meta property="og:description" data-i18n="app.description" content="Balatro mod that allows editing the profile and joker collection.">
     <meta property="og:image" content="https://matfon73.github.io/BalatroEditor/public/img/preview.jpg">
     <meta property="og:url" content="https://matfon73.github.io/BalatroEditor/">
     <meta property="og:type" content="website">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Balatro Editor">
-    <meta name="twitter:description" content="Balatro mod that allows editing the profile and joker collection.">
+    <meta name="twitter:description" data-i18n="app.description" content="Balatro mod that allows editing the profile and joker collection.">
     <meta name="twitter:image" content="https://matfon73.github.io/BalatroEditor/public/img/preview.jpg">
 
     <link rel="icon" type="image/ico" href="favicon.ico">
@@ -25,111 +25,94 @@
 <body>
     <div class="mobile-header">
         <button class="mobile-menu-btn" id="mobile-menu-toggle">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
         </button>
-        <h1>Balatro Editor - 1.0.1.o-FULL</h1>
+        <h1 data-i18n="app.title">Balatro Editor</h1>
+        <div class="mobile-lang-toggle">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="es">ES</button>
+        </div>
     </div>
 
     <div class="container">
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h1>Balatro Editor - 1.0.1.o-FULL</h1>
+                <h1 data-i18n="app.title">BALATRO EDITOR</h1>
+                <span class="version" data-i18n="app.version">v2.0.0 — 1.0.1.o-FULL</span>
             </div>
-            
+
             <div class="search-box">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
-                <input type="text" id="search-input" placeholder="Search items...">
+                <input type="text" id="search-input" data-i18n="search.placeholder" placeholder="Search cards...">
             </div>
 
-            <nav class="nav-tabs">
-                <button class="nav-tab active" data-category="jokers">
-                    <span class="icon"><i class="fa-solid fa-theater-masks"></i></span>
-                    <span>Jokers</span>
-                </button>
-                <button class="nav-tab" data-category="tarots">
-                    <span class="icon"><i class="fa-solid fa-star-and-crescent"></i></span>
-                    <span>Tarots</span>
-                </button>
-                <button class="nav-tab" data-category="planets">
-                    <span class="icon"><i class="fa-solid fa-earth-americas"></i></span>
-                    <span>Planets</span>
-                </button>
-                <button class="nav-tab" data-category="spectrals">
-                    <span class="icon"><i class="fa-solid fa-hat-wizard"></i></span>
-                    <span>Spectrals</span>
-                </button>
-                <button class="nav-tab" data-category="vouchers">
-                    <span class="icon"><i class="fa-solid fa-ticket"></i></span>
-                    <span>Vouchers</span>
-                </button>
-                <button class="nav-tab" data-category="decks">
-                    <span class="icon"><i class="fa-solid fa-clone"></i></span>
-                    <span>Decks</span>
-                </button>
-                <button class="nav-tab" data-category="modifiers">
-                    <span class="icon"><i class="fa-solid fa-star"></i></span>
-                    <span>Card Modifiers</span>
-                </button>
-                <button class="nav-tab" data-category="tags">
-                    <span class="icon"><i class="fa-solid fa-tag"></i></span>
-                    <span>Tags</span>
-                </button>
-                <button class="nav-tab" data-category="blinds">
-                    <span class="icon"><i class="fa-solid fa-eye"></i></span>
-                    <span>Blinds</span>
-                </button>
-                <button class="nav-tab" data-category="profile">
-                    <span class="icon"><i class="fa-solid fa-user"></i></span>
-                    <span>Profile</span>
-                </button>
-            </nav>
+            <div class="category-select">
+                <select id="category-select"></select>
+            </div>
 
-            <div class="sidebar-footer">
-                <div class="controls-grid">
+            <div class="sidebar-nav">
+                <button class="sidebar-nav-btn" id="btn-profile" data-category="profile">
+                    <i class="fa-solid fa-user"></i>
+                    <span data-i18n="nav.profile">Profile</span>
+                </button>
+                <button class="sidebar-nav-btn coming-soon" disabled>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span data-i18n="nav.edit_games">Edit Games</span>
+                    <span class="coming-soon-badge" data-i18n="nav.coming_soon">Coming Soon</span>
+                </button>
+            </div>
+
+            <div class="sidebar-controls">
+                <div class="controls-row">
                     <button id="unlock-all" class="control-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                             <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
                         </svg>
-                        Unlock All
+                        <span data-i18n="btn.unlock_all">UNLOCK ALL</span>
                     </button>
                     <button id="lock-all" class="control-btn">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                         </svg>
-                        Lock All
+                        <span data-i18n="btn.lock_all">LOCK ALL</span>
                     </button>
-                    
+                </div>
+                <div class="controls-row">
                     <label for="import-jkr" class="control-btn" style="cursor: pointer;">
-                        <i class="fa-solid fa-upload"></i> Import .jkr
+                        <i class="fa-solid fa-upload"></i> <span data-i18n="btn.import">IMPORT</span>
                         <input type="file" id="import-jkr" accept=".jkr" style="display: none;">
                     </label>
-                    
                     <button id="export-jkr" class="control-btn primary">
-                        <i class="fa-solid fa-download"></i> Export .jkr
+                        <i class="fa-solid fa-download"></i> <span data-i18n="btn.export">EXPORT</span>
                     </button>
                 </div>
             </div>
-            
-            <div class="copyright">
-                <p>Created by <a href="https://x.com/MatFon73" target="_blank">@MatFon73 - Beta v2.0.0</a></p>
-                <p style="font-size: 11px; margin-top: 4px; color: var(--text-tertiary);">
-                    JKR Convertor based by<br>
-                    <a href="https://github.com/TeddyHuang-00/BalatroSaveEditor" target="_blank" style="color: var(--accent-secondary);">BalatroSaveEditor</a>
+
+            <div class="lang-toggle">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="es">ES</button>
+            </div>
+
+            <div class="sidebar-footer">
+                <p><span data-i18n="footer.created_by">Created by</span> <a href="https://x.com/MatFon73" target="_blank">@MatFon73</a></p>
+                <p style="font-size: 11px; margin-top: 2px; color: var(--text-dim);">
+                    <span data-i18n="footer.jkr_credit">JKR Convertor based on</span>
+                    <a href="https://github.com/TeddyHuang-00/BalatroSaveEditor" target="_blank" style="color: var(--gold);">BalatroSaveEditor</a>
                 </p>
                 <div class="social-links">
-                    <a href="https://x.com/MatFon73" target="_blank" title="Twitter">
+                    <a href="https://x.com/MatFon73" target="_blank" data-i18n-title="footer.twitter" title="Twitter">
                         <i class="fa-brands fa-square-x-twitter"></i>
                     </a>
-                    <a href="https://github.com/MatFon73" target="_blank" title="GitHub">
+                    <a href="https://github.com/MatFon73" target="_blank" data-i18n-title="footer.github" title="GitHub">
                         <i class="fa-brands fa-square-github"></i>
                     </a>
                 </div>
@@ -138,13 +121,14 @@
 
         <main class="main-content">
             <div id="content-container">
-                <div class="loading">Loading data...</div>
+                <div class="loading" data-i18n="state.loading_data">Loading data...</div>
             </div>
         </main>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" crossorigin="anonymous"></script>
     <script src="public/js/jkr-converter.js"></script>
     <script src="public/js/utils.js"></script>
+    <script src="public/js/translations.js"></script>
     <script src="public/js/image-loader.js"></script>
     <script src="public/js/meta.js"></script>
     <script src="public/js/profile.js"></script>

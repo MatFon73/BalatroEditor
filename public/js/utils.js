@@ -1,22 +1,22 @@
 const CATEGORIES = {
-    jokers: { prefix: 'j_', name: 'Jokers' },
-    tarots: { prefix: 'c_', name: 'Tarots', filter: ['fool', 'magician', 'high_priestess', 'empress', 'emperor', 'heirophant', 'lovers', 'chariot', 'justice', 'hermit', 'wheel_of_fortune', 'strength', 'hanged_man', 'death', 'temperance', 'devil', 'tower', 'star', 'moon', 'sun', 'judgement', 'world'] },
-    planets: { prefix: 'c_', name: 'Planets', filter: ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'planet_x', 'ceres', 'eris'] },
-    spectrals: { prefix: 'c_', name: 'Spectrals', filter: ['familiar', 'grim', 'incantation', 'talisman', 'aura', 'wraith', 'sigil', 'ouija', 'ectoplasm', 'immolate', 'ankh', 'deja_vu', 'hex', 'trance', 'medium', 'cryptid', 'soul', 'black_hole'] },
-    vouchers: { prefix: 'v_', name: 'Vouchers' },
-    decks: { prefix: 'b_', name: 'Decks' },
+    jokers: { prefix: 'j_', name: 'nav.jokers' },
+    tarots: { prefix: 'c_', name: 'nav.tarots', filter: ['fool', 'magician', 'high_priestess', 'empress', 'emperor', 'heirophant', 'lovers', 'chariot', 'justice', 'hermit', 'wheel_of_fortune', 'strength', 'hanged_man', 'death', 'temperance', 'devil', 'tower', 'star', 'moon', 'sun', 'judgement', 'world'] },
+    planets: { prefix: 'c_', name: 'nav.planets', filter: ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'planet_x', 'ceres', 'eris'] },
+    spectrals: { prefix: 'c_', name: 'nav.spectrals', filter: ['familiar', 'grim', 'incantation', 'talisman', 'aura', 'wraith', 'sigil', 'ouija', 'ectoplasm', 'immolate', 'ankh', 'deja_vu', 'hex', 'trance', 'medium', 'cryptid', 'soul', 'black_hole'] },
+    vouchers: { prefix: 'v_', name: 'nav.vouchers' },
+    decks: { prefix: 'b_', name: 'nav.decks' },
     modifiers: {
-        name: 'Card Modifiers',
+        name: 'nav.modifiers',
         isMultiple: true,
         subcategories: [
-            { prefix: 'm_', name: 'Enhancements' },
-            { prefix: 'e_', name: 'Editions' },
-            { prefix: 'soul', name: 'Seals', isSeal: true }
+            { prefix: 'm_', name: 'nav.enhancements' },
+            { prefix: 'e_', name: 'nav.editions' },
+            { prefix: 'soul', name: 'nav.seals', isSeal: true }
         ]
     },
-    tags: { prefix: 'tag_', name: 'Tags' },
-    blinds: { prefix: 'bl_', name: 'Blinds' },
-    profile: { name: 'Profile' }
+    tags: { prefix: 'tag_', name: 'nav.tags' },
+    blinds: { prefix: 'bl_', name: 'nav.blinds' },
+    profile: { name: 'nav.profile' }
 };
 
 const NOTIFICATION_DURATION = 3000;
@@ -96,7 +96,7 @@ async function exportBlob(blob, suggestedName, successMessage) {
                 const fileHandle = await window.showSaveFilePicker({
                     suggestedName,
                     types: [{
-                        description: 'Balatro Save File',
+                        description: __('app.title'),
                         accept: { 'application/octet-stream': ['.jkr'] }
                     }]
                 });
@@ -106,7 +106,7 @@ async function exportBlob(blob, suggestedName, successMessage) {
                 showNotification(successMessage, 'success');
             } catch (err) {
                 if (err.name === 'AbortError') {
-                    showNotification('Export cancelled', 'info');
+                    showNotification(__('notif.export_cancelled'), 'info');
                 } else {
                     throw err;
                 }
@@ -126,7 +126,7 @@ async function exportBlob(blob, suggestedName, successMessage) {
             showNotification(successMessage, 'success');
         }
     } catch (error) {
-        showNotification('Error exporting: ' + error.message, 'error');
+        showNotification(__('notif.exporting_error', { message: error.message }), 'error');
     }
 }
 
@@ -134,7 +134,7 @@ function readFileAsArrayBuffer(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
-        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.onerror = () => reject(new Error(__('notif.file_read_error')));
         reader.readAsArrayBuffer(file);
     });
 }

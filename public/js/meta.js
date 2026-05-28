@@ -8,16 +8,40 @@ let currentCategory = 'jokers';
 let searchTerm = '';
 
 document.addEventListener('DOMContentLoaded', () => {
+    initLanguage();
+
     loadMetaJSON();
 
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            renderCategory(tab.dataset.category);
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('active');
-            }
+    function switchCategory(category) {
+        currentCategory = category;
+        renderCategory(category);
+
+        const profileBtn = document.getElementById('btn-profile');
+        if (category === 'profile') {
+            profileBtn?.classList.add('active');
+        } else {
+            profileBtn?.classList.remove('active');
+            document.getElementById('category-select').value = category;
+        }
+
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.remove('active');
+        }
+    }
+
+    document.getElementById('category-select').addEventListener('change', (e) => {
+        switchCategory(e.target.value);
+    });
+
+    document.getElementById('btn-profile')?.addEventListener('click', () => {
+        switchCategory('profile');
+    });
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            setLanguage(btn.dataset.lang);
         });
     });
 
@@ -66,15 +90,15 @@ async function exportJkr() {
     _exportingMeta = true;
     try {
         if (!metaData.unlocked || !metaData.discovered || !metaData.alerted) {
-            throw new Error('metaData structure is invalid');
+            throw new Error(__('error.meta_invalid'));
         }
-        showNotification('Preparing meta.jkr for export...', 'info');
+        showNotification(__('notif.preparing_meta'), 'info');
         const jkrContent = await jsonToJkr(metaData);
-        showNotification('Exporting meta.jkr...', 'info');
+        showNotification(__('notif.exporting_meta'), 'info');
         const blob = new Blob([jkrContent], { type: 'application/octet-stream' });
-        await exportBlob(blob, 'meta.jkr', 'meta.jkr exported successfully!');
+        await exportBlob(blob, 'meta.jkr', __('notif.exported_meta'));
     } catch (error) {
-        showNotification('Export failed: ' + error.message, 'error');
+        showNotification(__('notif.export_failed', { message: error.message }), 'error');
     } finally {
         _exportingMeta = false;
     }
@@ -82,17 +106,17 @@ async function exportJkr() {
 
 async function importJkr(file) {
     if (file.name !== 'meta.jkr' && file.name !== '1') {
-        showNotification('Please select a valid meta.jkr file', 'error');
+        showNotification(__('notif.invalid_meta_file'), 'error');
         return;
     }
     try {
-        showNotification('Converting JKR...', 'info');
+        showNotification(__('notif.converting'), 'info');
         const arrayBuffer = await readFileAsArrayBuffer(file);
         const uint8Array = new Uint8Array(arrayBuffer);
         const jsonData = await jkrToJson(uint8Array);
 
         if (!jsonData.unlocked || !jsonData.discovered) {
-            showNotification('Invalid meta.jkr: missing unlocked/discovered data', 'error');
+            showNotification(__('notif.invalid_meta_data'), 'error');
             return;
         }
 
@@ -101,9 +125,9 @@ async function importJkr(file) {
         metaData.alerted = jsonData.alerted || {};
 
         renderCategory(currentCategory);
-        showNotification('meta.jkr imported successfully!', 'success');
+        showNotification(__('notif.imported_meta'), 'success');
     } catch (error) {
-        showNotification('Error importing JKR: ' + error.message, 'error');
+        showNotification(__('notif.import_error', { message: error.message }), 'error');
     }
 }
 
@@ -120,8 +144,8 @@ async function loadMetaJSON() {
     } catch (error) {
         document.getElementById('content-container').innerHTML = `
             <div class="loading" style="color: var(--danger);">
-                Error loading meta.json<br>
-                <span style="font-size: 12px; color: var(--text-tertiary);">Make sure the file is in the same folder</span>
+                ${__('error.load_meta')}<br>
+                <span style="font-size: 12px; color: var(--text-tertiary);">${__('error.load_meta_desc')}</span>
             </div>
         `;
     }
@@ -138,14 +162,14 @@ function showSkeletonLoading() {
     container.innerHTML = `
         <div class="content-section active">
             <div class="category-header">
-                <h2>Loading...</h2>
+                <h2>${__('state.loading')}</h2>
                 <div class="stats">
                     <div class="stat-item">
-                        <div class="stat-label">Unlocked</div>
+                        <div class="stat-label">${__('state.skeleton_unlocked')}</div>
                         <div class="stat-value">- / -</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">Discovered</div>
+                        <div class="stat-label">${__('state.skeleton_discovered')}</div>
                         <div class="stat-value">- / -</div>
                     </div>
                 </div>
@@ -164,11 +188,11 @@ function updateStats() {
     if (statsContainer) {
         statsContainer.innerHTML = `
             <div class="stat-item">
-                <div class="stat-label">Unlocked</div>
+                <div class="stat-label">${__('stat.unlocked')}</div>
                 <div class="stat-value">${unlocked} / ${total}</div>
             </div>
             <div class="stat-item">
-                <div class="stat-label">Discovered</div>
+                <div class="stat-label">${__('stat.discovered')}</div>
                 <div class="stat-value">${discovered} / ${total}</div>
             </div>
         `;
@@ -222,8 +246,8 @@ function renderCategory(category) {
         } else {
             container.innerHTML = `
                 <div class="loading" style="color: var(--danger);">
-                    Profile module not loaded<br>
-                    <span style="font-size: 12px; color: var(--text-tertiary);">Make sure profile.js is included</span>
+                    ${__('error.no_profile_module')}<br>
+                    <span style="font-size: 12px; color: var(--text-tertiary);">${__('error.no_profile_module_desc')}</span>
                 </div>
             `;
         }
@@ -246,20 +270,20 @@ function renderCategory(category) {
         const html = `
             <div class="content-section active">
                 <div class="category-header">
-                    <h2>${cat.name}</h2>
+                    <h2>${__(cat.name)}</h2>
                     <div class="stats">
                         <div class="stat-item">
-                            <div class="stat-label">Unlocked</div>
+                            <div class="stat-label">${__('stat.unlocked')}</div>
                             <div class="stat-value">${unlocked} / ${total}</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">Discovered</div>
+                            <div class="stat-label">${__('stat.discovered')}</div>
                             <div class="stat-value">${discovered} / ${total}</div>
                         </div>
                     </div>
                 </div>
                 <div class="items-grid">
-                    ${items.length > 0 ? items.map(item => createItemCard(item, category)).join('') : '<div class="empty-state"><i class="fa-solid fa-magnifying-glass"></i><p>No items found</p><span>Try a different search term</span></div>'}
+                    ${items.length > 0 ? items.map(item => createItemCard(item, category)).join('') : `<div class="empty-state"><i class="fa-solid fa-magnifying-glass"></i><p>${__('empty.no_items')}</p><span>${__('empty.try_different')}</span></div>`}
                 </div>
             </div>
         `;
@@ -301,14 +325,14 @@ function showCategorySkeletonLoading(category) {
     container.innerHTML = `
         <div class="content-section active">
             <div class="category-header">
-                <h2>${cat.name}</h2>
+                <h2>${__(cat.name)}</h2>
                 <div class="stats">
                     <div class="stat-item">
-                        <div class="stat-label">Unlocked</div>
+                        <div class="stat-label">${__('stat.unlocked')}</div>
                         <div class="stat-value">- / -</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">Discovered</div>
+                        <div class="stat-label">${__('stat.discovered')}</div>
                         <div class="stat-value">- / -</div>
                     </div>
                 </div>
@@ -335,7 +359,7 @@ function createItemCard(id, category) {
             <div class="status-badge"></div>
             <img data-src="${imgUrl}" data-id="${id}" data-category="${category}" alt="${name}" loading="lazy" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23222' width='100' height='100'/%3E%3Cpath d='M35 42a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm22-6-8 12-6-5-10 13h34l-10-20z' fill='%23333'/%3E%3C/svg%3E">
             <div class="item-name">${name}</div>
-            <div class="state-indicator">${state === 'unlocked' ? 'Unlocked' : state === 'discovered' ? 'Discovered' : 'Locked'}</div>
+            <div class="state-indicator">${state === 'unlocked' ? __('stat.unlocked') : state === 'discovered' ? __('stat.discovered') : __('stat.locked')}</div>
         </div>
     `;
 }
@@ -368,8 +392,8 @@ function toggleItem(id) {
         card.classList.add(newState);
         const stateIndicator = card.querySelector('.state-indicator');
         if (stateIndicator) {
-            stateIndicator.textContent = newState === 'unlocked' ? 'Unlocked' :
-                newState === 'discovered' ? 'Discovered' : 'Locked';
+            stateIndicator.textContent = newState === 'unlocked' ? __('stat.unlocked') :
+                newState === 'discovered' ? __('stat.discovered') : __('stat.locked');
         }
     }
     updateStats();
