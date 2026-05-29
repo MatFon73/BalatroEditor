@@ -354,6 +354,13 @@ body::after {
     box-shadow: 0 0 10px rgba(255, 177, 0, 0.08);
 }
 
+.sidebar-separator {
+    margin: 12px 16px 0;
+    height: 1px;
+    background: var(--bg-panel);
+    opacity: 0.6;
+}
+
 .sidebar-controls {
     padding: 16px;
     display: flex;

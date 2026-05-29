@@ -134,8 +134,7 @@ C:\Users\{Your_User}\AppData\Roaming\Balatro\profile.jkr
 
 **macOS:**
 ```
-~/Library/Application Support/Balatro/1/meta.jkr
-~/Library/Application Support/Balatro/profile.jkr
+~/Library/Application Support/Balatro/1/meta.jkr / ~/Library/Application Support/Balatro/profile.jkr
 ```
 
 **Linux:**
