@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Balatro](https://img.shields.io/badge/BalatroEditor-8b5cf6?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4=)
-![Version](https://img.shields.io/badge/version-2.0.0-a78bfa?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.0.1-a78bfa?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-10b981?style=for-the-badge)
 
 **A minimalist and modern visual editor to modify your Balatro meta.jkr and profile.jkr files. Please note that the software is under development; there is no final version.**
@@ -101,17 +101,24 @@ That's it! No server, no installation, no configuration needed.
 ```
 BalatroEditor/
 ├── data/
-│   └── meta.json
+│   ├── meta.json              ← Default/demo save data
+│   ├── profile.json           ← Default/demo profile data
+│   └── translations.json      ← i18n translations
 ├── public/
 │   ├── css/
-│   │   ├── style.css
-│   │   └── profile.css
+│   │   ├── style.css          ← Full design system
+│   │   └── profile.css        ← Profile page styles
+│   ├── img/
+│   │   └── preview.jpg        ← Social preview image
 │   └── js/
 │       ├── jkr-converter.js   ← Lua ↔ JKR converter
 │       ├── utils.js           ← Shared utilities (notifications, export, debounce)
+│       ├── translations.js    ← i18n system
 │       ├── image-loader.js    ← Multi-source image loader with localStorage cache
 │       ├── meta.js            ← Meta.jkr editor
 │       └── profile.js         ← Profile.jkr editor
+├── .gitignore
+├── AGENTS.md                  ← Dev conventions
 ├── favicon.ico
 ├── index.html
 ├── LICENSE
@@ -160,17 +167,18 @@ C:\Users\{Your_User}\AppData\Roaming\Balatro\profile.jkr
 
 #### Importing Your Profile (profile.jkr)
 
-1. Click on the **"Profile"** tab in the sidebar
+1. Click **"Profile"** in the sidebar navigation (below the category dropdown)
 2. Click **"Import profile.jkr"** button
 3. Select your `profile.jkr` file from Balatro folder
 4. Your profile statistics will load and be ready for editing
 
 #### Editing Cards
 
-1. **Left Sidebar**: Navigate between different card categories
-2. **Search Bar**: Filter cards by typing their name
-3. **Card Grid**: Click any card to unlock/lock it
-4. **Visual States**:
+1. **Category Dropdown**: Select a card category (Jokers, Tarots, Planets, etc.)
+2. **Sidebar Navigation**: Switch between **Profile** (stats editor) and **Edit Games** (coming soon)
+3. **Search Bar**: Filter cards by typing their name
+4. **Card Grid**: Click any card to unlock/lock it
+5. **Visual States**:
    - Green border: Card is unlocked
    - Yellow: Card is discovered
    - Red: Card is locked
@@ -277,13 +285,13 @@ Progress bars update automatically as you edit values.
 
 ### Recent Improvements
 
-- **Multi-CDN Image Loading**: Automatic fallback between multiple URL patterns for Balatro Wiki images
-- **Persistent Image Cache**: Successfully loaded images are cached in localStorage — no more re-downloading
-- **Silent Error Handling**: Image load failures are handled silently without console noise
-- **Debounced Search**: Real-time search is now debounced (200ms) for better performance
-- **Safe Lua Parser**: Replaced `new Function()` with a recursive descent parser for security
-- **Shared Utilities Module**: Extracted common code into `utils.js` (notifications, export, formatName, debounce)
-- **Dedicated Image Loader**: Separated image loading logic into `image-loader.js` for maintainability
+- **i18n System**: Full internationalization with language toggle (EN/ES) — all text translated
+- **Profile Statistics Editor**: In-depth profile.jkr editing with high scores, career stats, progress tracking, deck stats, and challenge progress
+- **Skeleton Loading**: Clean loading placeholders with pulse animation while data loads
+- **Image Loading States**: Visual feedback for loading, loaded, and error states on card images
+- **Accessibility**: Keyboard navigation (tabindex, Enter/Space handlers), focus-visible outlines, ARIA roles
+- **Export Guards**: Prevents concurrent exports with `_exportingMeta` / `_exportingProfile` flags
+- **Sidebar Restructure**: Dedicated Profile and Edit Games navigation alongside the category dropdown
 
 ---
 

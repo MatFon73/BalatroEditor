@@ -1,7 +1,7 @@
 {
   "en": {
     "app.title": "Balatro Editor",
-    "app.version": "v2.0.0 — 1.0.1.o-FULL",
+    "app.version": "v2.0.1 — 1.0.1.o-FULL",
     "app.description": "Balatro mod that allows editing the profile and joker collection.",
     "nav.jokers": "Jokers",
     "nav.tarots": "Tarots",
@@ -141,7 +141,7 @@
   },
   "es": {
     "app.title": "Balatro Editor",
-    "app.version": "v2.0.0 — 1.0.1.o-FULL",
+    "app.version": "v2.0.1 — 1.0.1.o-FULL",
     "app.description": "Mod de Balatro que permite editar el perfil y la colección de comodines.",
     "nav.jokers": "Comodines",
     "nav.tarots": "Arcanos",
