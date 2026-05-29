@@ -17,7 +17,7 @@
 ## Preview
 
 <div align="center">
-  <img src="https://i.ibb.co/84GBk5CC/preview.jpg" alt="Balatro Meta Editor Preview" width="100%">
+  <img src="https://i.postimg.cc/50XjBjY1/preview.jpg" alt="Balatro Meta Editor Preview" width="100%">
 </div>
 
 ---
