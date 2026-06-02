@@ -3,10 +3,10 @@
 <div align="center">
 
 ![Balatro](https://img.shields.io/badge/BalatroEditor-8b5cf6?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4=)
-![Version](https://img.shields.io/badge/version-2.0.1-a78bfa?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-2.5.0-a78bfa?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-10b981?style=for-the-badge)
 
-**A minimalist and modern visual editor to modify your Balatro meta.jkr and profile.jkr files. Please note that the software is under development; there is no final version.**
+**A minimalist and modern visual editor to modify your Balatro meta.jkr, profile.jkr and save.jkr files. Please note that the software is under development; there is no final version.**
 
 [Features](#features) • [Installation](#installation) • [Usage](#usage) • [Technologies](#technologies)
 
@@ -62,12 +62,25 @@
 - View detailed deck statistics with win rates
 - **Import/Export profile.jkr files**
 
+### Save Game Editor — New in v2.5.0
+
+Full editor for Balatro's `save.jkr`:
+
+- **Game tab**: Edit money, hands, discards, hand size, ante, round, joker/consumable slots, reroll cost, discount
+- **Deck tab**: Browse cards grouped by suit, edit suit/value/enhancement/seal per card, bulk select & apply changes, add new cards
+- **Jokers tab**: Add, edit, remove jokers, change joker ID, edit scaling stats, apply editions, search & filter joker modal
+- **Consumables tab**: Add, edit, remove tarots, planets, spectrals
+- **Vouchers tab**: View and remove used vouchers
+- **Planets tab**: View hand levels with chips/mult, edit level with auto-recalculated values
+- Lucky card probabilities (1/15 · 1/5) double automatically when **Oops! All 6s** is in the joker lineup
+- Security confirmation dialog on every export with GitHub source link
+
 ### Full Control
 
 - Unlock/Discovered/Lock everything with one click
 - Individual toggle for each card
 - **Import/Export .jkr files** (native Balatro format)
-- **100% Client-Side Processing** - No server required!
+- **100% Client-Side Processing** — No server required!
 
 ---
 
@@ -102,21 +115,23 @@ That's it! No server, no installation, no configuration needed.
 BalatroEditor/
 ├── data/
 │   ├── meta.json              ← Default/demo save data
-│   ├── profile.json           ← Default/demo profile data
-│   └── translations.json      ← i18n translations
+│   ├── save.jkr               ← Demo compressed save for testing
+│   └── profile.json           ← Default/demo profile data
 ├── public/
 │   ├── css/
 │   │   ├── style.css          ← Full design system
-│   │   └── profile.css        ← Profile page styles
+│   │   ├── profile.css        ← Profile page styles
+│   │   └── save-editor.css    ← Save editor specific styles
 │   ├── img/
 │   │   └── preview.jpg        ← Social preview image
 │   └── js/
-│       ├── jkr-converter.js   ← Lua ↔ JKR converter
-│       ├── utils.js           ← Shared utilities (notifications, export, debounce)
-│       ├── translations.js    ← i18n system
+│       ├── jkr-converter.js   ← Lua ↔ JKR converter (deflate/inflate)
+│       ├── utils.js           ← Shared utilities (notifications, format, export, debounce)
+│       ├── translations.js    ← i18n system EN/ES with __() helper
 │       ├── image-loader.js    ← Multi-source image loader with localStorage cache
-│       ├── meta.js            ← Meta.jkr editor
-│       └── profile.js         ← Profile.jkr editor
+│       ├── meta.js            ← Meta.jkr collection editor
+│       ├── profile.js         ← Profile.jkr stats editor
+│       └── save-editor.js     ← Save.jkr game editor
 ├── .gitignore
 ├── AGENTS.md                  ← Dev conventions
 ├── favicon.ico
@@ -136,23 +151,21 @@ BalatroEditor/
 **Windows:**
 ```
 C:\Users\{Your_User}\AppData\Roaming\Balatro\1\meta.jkr
+C:\Users\{Your_User}\AppData\Roaming\Balatro\1\save.jkr
 C:\Users\{Your_User}\AppData\Roaming\Balatro\profile.jkr
 ```
 
 **macOS:**
 ```
-~/Library/Application Support/Balatro/1/meta.jkr / ~/Library/Application Support/Balatro/profile.jkr
+~/Library/Application Support/Balatro/1/meta.jkr
+~/Library/Application Support/Balatro/1/save.jkr
+~/Library/Application Support/Balatro/profile.jkr
 ```
 
-**Linux:**
+**Linux / Steam Deck:**
 ```
 ~/.local/share/Balatro/1/meta.jkr
-~/.local/share/Balatro/profile.jkr
-```
-
-**Steam Deck:**
-```
-~/.local/share/Balatro/1/meta.jkr
+~/.local/share/Balatro/1/save.jkr
 ~/.local/share/Balatro/profile.jkr
 ```
 
@@ -172,10 +185,17 @@ C:\Users\{Your_User}\AppData\Roaming\Balatro\profile.jkr
 3. Select your `profile.jkr` file from Balatro folder
 4. Your profile statistics will load and be ready for editing
 
+#### Importing Your Save (save.jkr)
+
+1. Click **"Edit Games"** in the sidebar navigation
+2. Click **"Import save.jkr"** button
+3. Select your `save.jkr` file from Balatro folder
+4. Navigate between tabs (Game, Deck, Jokers, Consumables, Vouchers, Planets) to edit different aspects
+
 #### Editing Cards
 
 1. **Category Dropdown**: Select a card category (Jokers, Tarots, Planets, etc.)
-2. **Sidebar Navigation**: Switch between **Profile** (stats editor) and **Edit Games** (coming soon)
+2. **Sidebar Navigation**: Switch between **Profile** (stats editor) and **Edit Games** (save editor)
 3. **Search Bar**: Filter cards by typing their name
 4. **Card Grid**: Click any card to unlock/lock it
 5. **Visual States**:
@@ -225,6 +245,15 @@ Progress bars update automatically as you edit values.
 4. **Backup your original file** (highly recommended)
 5. Replace the original `profile.jkr` at the Balatro folder location
 6. Start Balatro to see your updated profile
+
+**For save.jkr:**
+
+1. After editing your game, click **"Export .jkr"** in the save editor
+2. Save the file as `save.jkr`
+3. **Close Balatro completely** (if running)
+4. **Backup your original file** (highly recommended)
+5. Replace the original `save.jkr` at the Balatro folder location
+6. Start Balatro to play with your modified game
 
 ---
 
@@ -285,12 +314,14 @@ Progress bars update automatically as you edit values.
 
 ### Recent Improvements
 
+- **Save Game Editor**: Full save.jkr editing with 6 tabs (Game, Deck, Jokers, Consumables, Vouchers, Planets) including bulk deck operations, joker search modal, and Oops All 6s lucky card detection
 - **i18n System**: Full internationalization with language toggle (EN/ES) — all text translated
 - **Profile Statistics Editor**: In-depth profile.jkr editing with high scores, career stats, progress tracking, deck stats, and challenge progress
 - **Skeleton Loading**: Clean loading placeholders with pulse animation while data loads
 - **Image Loading States**: Visual feedback for loading, loaded, and error states on card images
 - **Accessibility**: Keyboard navigation (tabindex, Enter/Space handlers), focus-visible outlines, ARIA roles
-- **Export Guards**: Prevents concurrent exports with `_exportingMeta` / `_exportingProfile` flags
+- **Export Guards**: Prevents concurrent exports with `_exportingMeta` / `_exportingProfile` / `_exportingSave` flags
+- **Security Dialog**: Custom modal on every export confirming the file is safe, with link to GitHub source code
 - **Sidebar Restructure**: Dedicated Profile and Edit Games navigation alongside the category dropdown
 
 ---
@@ -352,9 +383,18 @@ Progress bars update automatically as you edit values.
 **Problem**: Profile tab shows "No Profile Loaded"
 
 **Solution**: 
-- Make sure you're importing the `profile.jkr` file (not `meta.jkr`)
+- Make sure you're importing the `profile.jkr` file (not `meta.jkr` or `save.jkr`)
 - Verify the file is from a valid Balatro save
 - Try importing again after refreshing the page
+
+### Save Editor Not Loading
+
+**Problem**: Save editor tab shows "Save Editor module not loaded"
+
+**Solution**:
+- Make sure you're loading the page via `index.html` (not opening individual files)
+- Check browser console (F12) for errors
+- Verify `save-editor.js` exists in `public/js/`
 
 ### Changes Not Saving in Game
 

@@ -965,3 +965,124 @@ input[type=number] {
         font-size: 22px;
     }
 }
+
+.safe-dl-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.safe-dl-modal {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-dark);
+    border-radius: 16px;
+    padding: 32px 36px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    animation: scaleIn 0.2s ease;
+}
+
+.safe-dl-icon {
+    font-size: 48px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    text-shadow: 0 0 30px rgba(255,177,0,0.2);
+}
+
+.safe-dl-title {
+    font-family: var(--font-terminal);
+    font-size: 22px;
+    color: var(--gold);
+    margin: 0 0 8px 0;
+}
+
+.safe-dl-msg {
+    font-family: var(--font-terminal);
+    font-size: 18px;
+    color: var(--text-light);
+    margin: 0 0 4px 0;
+}
+
+.safe-dl-msg strong {
+    color: var(--gold);
+}
+
+.safe-dl-code {
+    font-family: var(--font-terminal);
+    font-size: 15px;
+    color: var(--text-dim);
+    margin: 0 0 16px 0;
+}
+
+.safe-dl-github {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-terminal);
+    font-size: 14px;
+    color: var(--accent-primary);
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid var(--bg-panel-hover);
+    border-radius: 8px;
+    transition: all 0.15s;
+    margin-bottom: 20px;
+}
+
+.safe-dl-github:hover {
+    background: var(--bg-panel);
+    border-color: var(--accent-primary);
+    color: var(--gold);
+}
+
+.safe-dl-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.safe-dl-actions button {
+    font-family: var(--font-terminal);
+    font-size: 15px;
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.safe-dl-cancel {
+    background: var(--bg-tertiary);
+    border: 2px solid var(--bg-panel-hover);
+    color: var(--text-dim);
+}
+
+.safe-dl-cancel:hover {
+    background: var(--bg-panel-active);
+    border-color: var(--border-dark);
+    color: var(--text-light);
+}
+
+.safe-dl-confirm {
+    background: var(--gold);
+    border: 2px solid var(--gold-dark);
+    color: var(--bg-primary);
+    font-weight: bold;
+}
+
+.safe-dl-confirm:hover {
+    background: var(--gold-bright);
+    box-shadow: 0 0 16px rgba(255,177,0,0.3);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}

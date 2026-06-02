@@ -1,3 +1,43 @@
+const REPO_URL = 'https://github.com/MatFon73/BalatroEditor';
+
+function showSafeDownloadModal(filename) {
+    return new Promise(resolve => {
+        const overlay = document.createElement('div');
+        overlay.className = 'safe-dl-overlay';
+        overlay.innerHTML = `
+            <div class="safe-dl-modal">
+                <div class="safe-dl-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3 class="safe-dl-title">${filename}</h3>
+                <p class="safe-dl-msg">${__('safe_dl.msg')}</p>
+                <p class="safe-dl-code">${__('safe_dl.code')}</p>
+                <a href="${REPO_URL}" target="_blank" rel="noopener noreferrer" class="safe-dl-github">
+                    <i class="fa-brands fa-github"></i> ${__('safe_dl.github')}
+                </a>
+                <div class="safe-dl-actions">
+                    <button class="safe-dl-cancel">${__('safe_dl.cancel')}</button>
+                    <button class="safe-dl-confirm">${__('safe_dl.confirm', { filename })}</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('.safe-dl-cancel').addEventListener('click', () => {
+            overlay.remove();
+            resolve(false);
+        });
+        overlay.querySelector('.safe-dl-confirm').addEventListener('click', () => {
+            overlay.remove();
+            resolve(true);
+        });
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) {
+                overlay.remove();
+                resolve(false);
+            }
+        });
+    });
+}
+
 const CATEGORIES = {
     jokers: { prefix: 'j_', name: 'nav.jokers' },
     tarots: { prefix: 'c_', name: 'nav.tarots', filter: ['fool', 'magician', 'high_priestess', 'empress', 'emperor', 'heirophant', 'lovers', 'chariot', 'justice', 'hermit', 'wheel_of_fortune', 'strength', 'hanged_man', 'death', 'temperance', 'devil', 'tower', 'star', 'moon', 'sun', 'judgement', 'world'] },

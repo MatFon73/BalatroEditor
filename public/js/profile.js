@@ -506,6 +506,7 @@ async function exportProfileJkr() {
             showNotification(__('notif.cannot_export', { message: validation.error }), 'error');
             return;
         }
+        if (!await showSafeDownloadModal('profile.jkr')) return;
         showNotification(__('notif.preparing_profile'), 'info');
         const jkrContent = await jsonToJkr(profileData);
         showNotification(__('notif.exporting_profile'), 'info');

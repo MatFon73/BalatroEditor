@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="public/css/style.css">
     <link rel="stylesheet" href="public/css/profile.css">
+    <link rel="stylesheet" href="public/css/save-editor.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" crossorigin="anonymous">
 
     <meta property="og:title" content="Balatro Editor">
@@ -42,7 +43,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h1 data-i18n="app.title">BALATRO EDITOR</h1>
-                <span class="version" data-i18n="app.version">v2.0.0 — 1.0.1.o-FULL</span>
+                <span class="version" data-i18n="app.version">v2.5.0 — 1.0.1.o-FULL</span>
             </div>
 
             <div class="search-box">
@@ -64,10 +65,9 @@
                     <i class="fa-solid fa-user"></i>
                     <span data-i18n="nav.profile">Profile</span>
                 </button>
-                <button class="sidebar-nav-btn coming-soon" disabled>
+                <button class="sidebar-nav-btn" id="btn-save" data-category="save">
                     <i class="fa-solid fa-pen-to-square"></i>
                     <span data-i18n="nav.edit_games">Edit Games</span>
-                    <span class="coming-soon-badge" data-i18n="nav.coming_soon">Coming Soon</span>
                 </button>
             </div>
 
@@ -136,5 +136,6 @@
     <script src="public/js/image-loader.js"></script>
     <script src="public/js/meta.js"></script>
     <script src="public/js/profile.js"></script>
+    <script src="public/js/save-editor.js"></script>
 </body>
 </html>

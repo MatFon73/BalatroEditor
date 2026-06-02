@@ -99,7 +99,7 @@ function parseTable() {
         if (keyToken.type === 'string') {
             key = consume('string').value;
         } else if (keyToken.type === 'number') {
-            key = String(consume('number').value);
+            key = '\t\f' + String(consume('number').value);
         } else {
             throw new Error('Expected string or number key');
         }
@@ -134,17 +134,34 @@ function convertObjToLua(obj) {
         if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
             value = convertObjToLua(value);
         } else if (typeof value === 'string') {
-            value = '"' + value + '"';
+            value = '"' + value.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
         } else if (typeof value === 'boolean') {
             value = value ? 'true' : 'false';
         } else if (value === null || value === undefined) {
             value = 'nil';
+        } else if (Array.isArray(value)) {
+            let arrContent = '';
+            value.forEach((v, i) => {
+                if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
+                    v = convertObjToLua(v);
+                } else if (typeof v === 'string') {
+                    v = '"' + String(v).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+                } else if (typeof v === 'boolean') {
+                    v = v ? 'true' : 'false';
+                } else if (v === null || v === undefined) {
+                    v = 'nil';
+                }
+                arrContent += '[' + (i + 1) + ']=' + v + ',';
+            });
+            value = '{' + arrContent + '}';
         }
-        let luaKey = key;
-        if (typeof key === 'string' && /^\d+$/.test(key)) {
-            luaKey = key;
-        } else if (typeof key === 'string') {
-            luaKey = '"' + key + '"';
+        let luaKey;
+        if (typeof key === 'string' && key.startsWith('\t\f')) {
+            luaKey = key.substring(2);
+        } else if (typeof key === 'number') {
+            luaKey = String(key);
+        } else {
+            luaKey = '"' + String(key).replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
         }
         result += '[' + luaKey + ']=' + value + ',';
     }
@@ -156,9 +173,6 @@ function encodeObj(obj) {
     for (let key in obj) {
         let newKey = key;
         let value = obj[key];
-        if (!isNaN(key) && Number.isInteger(Number(key))) {
-            newKey = '\t\f' + key;
-        }
         if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
             value = encodeObj(value);
         }
@@ -170,15 +184,11 @@ function encodeObj(obj) {
 function decodeObj(obj) {
     const result = {};
     for (let key in obj) {
-        let newKey = key;
         let value = obj[key];
-        if (typeof key === 'string' && key.startsWith('\t\f')) {
-            newKey = parseInt(key.substring(2));
-        }
         if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
             value = decodeObj(value);
         }
-        result[newKey] = value;
+        result[key] = value;
     }
     return result;
 }

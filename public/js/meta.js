@@ -17,10 +17,16 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCategory(category);
 
         const profileBtn = document.getElementById('btn-profile');
+        const saveBtn = document.getElementById('btn-save');
         if (category === 'profile') {
             profileBtn?.classList.add('active');
+            saveBtn?.classList.remove('active');
+        } else if (category === 'save') {
+            saveBtn?.classList.add('active');
+            profileBtn?.classList.remove('active');
         } else {
             profileBtn?.classList.remove('active');
+            saveBtn?.classList.remove('active');
             document.getElementById('category-select').value = category;
         }
 
@@ -35,6 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btn-profile')?.addEventListener('click', () => {
         switchCategory('profile');
+    });
+
+    document.getElementById('btn-save')?.addEventListener('click', () => {
+        switchCategory('save');
     });
 
     document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -92,6 +102,7 @@ async function exportJkr() {
         if (!metaData.unlocked || !metaData.discovered || !metaData.alerted) {
             throw new Error(__('error.meta_invalid'));
         }
+        if (!await showSafeDownloadModal('meta.jkr')) return;
         showNotification(__('notif.preparing_meta'), 'info');
         const jkrContent = await jsonToJkr(metaData);
         showNotification(__('notif.exporting_meta'), 'info');
@@ -253,9 +264,24 @@ function renderCategory(category) {
         }
         return;
     }
+
+    if (category === 'save') {
+        if (typeof renderSaveEditor === 'function') {
+            renderSaveEditor();
+        } else {
+            container.innerHTML = `
+                <div class="loading" style="color: var(--danger);">
+                    ${__('error.no_save_module')}<br>
+                    <span style="font-size: 12px; color: var(--text-tertiary);">${__('error.no_save_module_desc')}</span>
+                </div>
+            `;
+        }
+        return;
+    }
     showCategorySkeletonLoading(category);
     const skeletonStart = Date.now();
     setTimeout(() => {
+        if (currentCategory !== category) return;
         let items = getItemsForCategory(category);
         if (searchTerm) {
             const term = searchTerm.toLowerCase();
@@ -292,6 +318,7 @@ function renderCategory(category) {
         const remaining = Math.max(0, 1000 - elapsed);
 
         const applyRender = () => {
+            if (currentCategory !== category) return;
             container.innerHTML = html;
             document.querySelectorAll('.item-card').forEach(card => {
                 card.addEventListener('click', () => toggleItem(card.dataset.id));
