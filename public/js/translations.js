@@ -1,8 +1,8 @@
 const _translations = {
   "en": {
     "app.title": "Balatro Editor",
-    "app.version": "v2.0.1 — 1.0.1.o-FULL",
-    "app.description": "Balatro mod that allows editing the profile and joker collection.",
+    "app.version": "v2.5.0 — 1.0.1.o-FULL",
+
     "nav.jokers": "Jokers",
     "nav.tarots": "Tarots",
     "nav.planets": "Planets",
@@ -202,8 +202,8 @@ const _translations = {
   },
   "es": {
     "app.title": "Balatro Editor",
-    "app.version": "v2.0.1 — 1.0.1.o-FULL",
-    "app.description": "Mod de Balatro que permite editar el perfil y la colecci\u00f3n de comodines.",
+    "app.version": "v2.5.0 — 1.0.1.o-FULL",
+
     "nav.jokers": "Comodines",
     "nav.tarots": "Arcanos",
     "nav.planets": "Planetas",
