@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: BalatroEditor Discussion
+    url: https://github.com/MatFon73/BalatroEditor/discussions
+    about: Questions, ideas, and general discussion
+  - name: Balatro Community Discord
+    url: https://discord.gg/balatro
+    about: For help with Balatro itself, not the editor
