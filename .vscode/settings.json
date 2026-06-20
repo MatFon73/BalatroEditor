@@ -1,0 +1,17 @@
+{
+  "files.associations": {
+    "*.jkr": "plaintext"
+  },
+  "files.exclude": {
+    "node_modules/": true,
+    ".atl/": true
+  },
+  "editor.wordWrap": "on",
+  "editor.wordWrapColumn": 100,
+  "editor.formatOnSave": false,
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "[markdown]": {
+    "files.trimTrailingWhitespace": false
+  }
+}

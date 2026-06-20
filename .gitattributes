@@ -1,0 +1,9 @@
+# Normalize line endings
+* text=auto eol=lf
+
+# JKR files are Balatro compressed save files — treat as binary
+*.jkr binary
+
+# Keep gitattributes and editorconfig as-is
+.gitattributes text eol=lf
+.editorconfig text eol=lf
