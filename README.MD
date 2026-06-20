@@ -145,8 +145,7 @@ Cards show **green** (unlocked), **yellow** (discovered), or **red** (locked) bo
 
 - **[LocalThunk](https://x.com/localthunk)** - Creator of Balatro
 - **[TeddyHuang-00](https://github.com/TeddyHuang-00)** - Creator of [BalatroSaveEditor](https://github.com/TeddyHuang-00/BalatroSaveEditor) - JKR format reference
-- **Balatro Wiki Community** - For card images and information
-- **Contributors** - Everyone who has helped improve this project
+- **Balatro Wiki** - For card images and information
 
 ### JKR Format Implementation
 
@@ -170,10 +169,4 @@ _Systems Engineer_
 
 </div>
 
----
 
-<div align="center">
-
-Made for the Balatro community
-
-</div>
