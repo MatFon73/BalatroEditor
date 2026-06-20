@@ -1,6 +1,6 @@
-# [Balatro Editor](https://matfon73.github.io/BalatroEditor) - Mateo Fonseca
-
 <div align="center">
+
+# [Balatro Editor](https://matfon73.github.io/BalatroEditor) - Mateo Fonseca
 
 ![Balatro](https://img.shields.io/badge/BalatroEditor-8b5cf6?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4=)
 ![Version](https://img.shields.io/badge/version-2.5.0-a78bfa?style=for-the-badge)
@@ -8,7 +8,7 @@
 
 **A minimalist and modern visual editor to modify your Balatro meta.jkr, profile.jkr and save.jkr files. Please note that the software is under development; there is no final version.**
 
-[Features](#features) • [Installation](#installation) • [Usage](#usage) • [Technologies](#technologies)
+[Features](#features) • [Installation](#installation) • [Usage](#usage)
 
 </div>
 
@@ -113,9 +113,19 @@ That's it! No server, no installation, no configuration needed.
 ### File Structure
 ```
 BalatroEditor/
+├── .github/
+│   ├── CODE_OF_CONDUCT.md     ← Collaboration rules
+│   ├── CONTRIBUTING.md        ← Contribution guide
+│   ├── PULL_REQUEST_TEMPLATE.md
+│   └── ISSUE_TEMPLATE/
+│       ├── bug_report.md
+│       ├── feature_request.md
+│       └── config.yml
+├── .vscode/
+│   ├── extensions.json        ← Recommended extensions (Live Server)
+│   └── settings.json          ← Workspace settings
 ├── data/
 │   ├── meta.json              ← Default/demo save data
-│   ├── save.jkr               ← Demo compressed save for testing
 │   └── profile.json           ← Default/demo profile data
 ├── public/
 │   ├── css/
@@ -132,6 +142,8 @@ BalatroEditor/
 │       ├── meta.js            ← Meta.jkr collection editor
 │       ├── profile.js         ← Profile.jkr stats editor
 │       └── save-editor.js     ← Save.jkr game editor
+├── .editorconfig              ← Editor consistency
+├── .gitattributes             ← Git file handling
 ├── .gitignore
 ├── AGENTS.md                  ← Dev conventions
 ├── favicon.ico
@@ -255,57 +267,6 @@ Progress bars update automatically as you edit values.
 5. Replace the original `save.jkr` at the Balatro folder location
 6. Start Balatro to play with your modified game
 
----
-
-## Technologies
-
-<table>
-<tr>
-<td align="center" width="33%">
-
-### HTML5
-
-**Version**: HTML Living Standard
-
-**Usage**:
-
-- Semantic structure
-- Integrated SVG icons
-- Enhanced accessibility
-
-</td>
-<td align="center" width="33%">
-
-### CSS3
-
-**Version**: CSS3 + Variables
-
-**Usage**:
-
-- Design system with CSS variables
-- Flexbox & Grid Layout
-- Animations and transitions
-- Responsive media queries
-
-</td>
-<td align="center" width="33%">
-
-### JavaScript
-
-**Version**: ES6+ (ECMAScript 2015+)
-
-**Usage**:
-
-- DOM manipulation
-- Fetch API for loading data
-- Events and listeners
-- Real-time filtering and search
-- Client-side JKR processing
-
-</td>
-</tr>
-</table>
-
 ### External Libraries
 
 - **Font Awesome**: 7.1.0 - Icon library for UI elements
@@ -335,16 +296,6 @@ Progress bars update automatically as you edit values.
 - **Client-Side Processing**: All JKR conversions happen in your browser
 - **No Server Required**: Works offline after initial load
 - **Mobile First**: Design optimized for all devices
-
-### Browser Compatibility
-
-| Browser | Minimum Version |
-| ------- | --------------- |
-| Chrome  | 90+             |
-| Firefox | 88+             |
-| Edge    | 90+             |
-| Safari  | 14+             |
-| Opera   | 76+             |
 
 ---
 
@@ -435,7 +386,6 @@ This project implements client-side JKR file processing inspired by the format d
 - [LocalThunk on Twitter/X](https://x.com/localthunk)
 - [Balatro Wiki](https://balatrogame.fandom.com/)
 - [Official Balatro Website](https://www.playbalatro.com/)
-- [Balatro Discord Community](https://discord.gg/balatro)
 - [BalatroSaveEditor Repository](https://github.com/TeddyHuang-00/BalatroSaveEditor)
 
 ---
