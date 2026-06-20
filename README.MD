@@ -2,7 +2,7 @@
 
 # [Balatro Editor](https://matfon73.github.io/BalatroEditor) - Mateo Fonseca
 
-![Balatro](https://img.shields.io/badge/BalatroEditor-8b5cf6?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4=)
+![Balatro](https://img.shields.io/badge/BalatroEditor-8b5cf6?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1zbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgZmlsbD0iI2ZmZiIvPgo8L3N2Zz4=)
 ![Version](https://img.shields.io/badge/version-2.5.0-a78bfa?style=for-the-badge)
 ![License](https://img.shields.io/badge/license-MIT-10b981?style=for-the-badge)
 
@@ -24,63 +24,14 @@
 
 ## Features
 
-### Modern Minimalist Design
-
-- Elegant dark interface with purple accents
-- Smooth animations and fluid transitions
-- Skeleton loading while data loads
-
-### Smart Search
-
-- Search any card in real-time
-- Instant filtering by name
-
-### Fully Responsive
-
-- Adapted design for desktop and mobile
-- Hamburger menu on small devices
-- Flexible grid that adjusts to screen size
-
-### Complete Collection Management
-
-- Jokers
-- Tarots
-- Planets
-- Spectrals
-- Vouchers
-- Decks
-- Card Modifiers (Enhancements, Editions, Seals)
-- Tags
-- Blinds
-
-### Profile Statistics Editor
-
-- Edit player name
-- Modify high scores (Highest Ante, Best Hand, Most Money, etc.)
-- Update career statistics (Wins, Losses, Hands Played, etc.)
-- Adjust progress tracking (Challenges, Deck Stakes, Joker Stickers)
-- View detailed deck statistics with win rates
-- **Import/Export profile.jkr files**
-
-### Save Game Editor — New in v2.5.0
-
-Full editor for Balatro's `save.jkr`:
-
-- **Game tab**: Edit money, hands, discards, hand size, ante, round, joker/consumable slots, reroll cost, discount
-- **Deck tab**: Browse cards grouped by suit, edit suit/value/enhancement/seal per card, bulk select & apply changes, add new cards
-- **Jokers tab**: Add, edit, remove jokers, change joker ID, edit scaling stats, apply editions, search & filter joker modal
-- **Consumables tab**: Add, edit, remove tarots, planets, spectrals
-- **Vouchers tab**: View and remove used vouchers
-- **Planets tab**: View hand levels with chips/mult, edit level with auto-recalculated values
-- Lucky card probabilities (1/15 · 1/5) double automatically when **Oops! All 6s** is in the joker lineup
-- Security confirmation dialog on every export with GitHub source link
-
-### Full Control
-
-- Unlock/Discovered/Lock everything with one click
-- Individual toggle for each card
-- **Import/Export .jkr files** (native Balatro format)
-- **100% Client-Side Processing** — No server required!
+- **Collection management** — unlock, discover, or lock any card (Jokers, Tarots, Planets, Spectrals, Vouchers, Decks, Modifiers, Tags, Blinds)
+- **Profile editor** — edit name, high scores, career stats, progress tracking, challenge progress, and deck statistics with win rates
+- **Save editor** — full save.jkr editing with Game, Deck, Jokers, Consumables, Vouchers, and Planets tabs
+- **Bulk operations** — unlock/lock all per category, bulk select and edit deck cards
+- **Smart search** — real-time card filtering by name
+- **Import/Export .jkr** — native Balatro format, 100% client-side, no server required
+- **Responsive design** — desktop and mobile with adaptive layout and hamburger menu
+- **i18n** — English and Spanish with instant toggle
 
 ---
 
@@ -156,206 +107,31 @@ BalatroEditor/
 
 ## Usage
 
-### Getting Your Balatro Save Files
+### File Locations
 
-**File locations:**
+**Windows:** `C:\Users\{User}\AppData\Roaming\Balatro\1\meta.jkr` / `save.jkr`  
+**macOS:** `~/Library/Application Support/Balatro/1/meta.jkr` / `save.jkr`  
+**Linux / Steam Deck:** `~/.local/share/Balatro/1/meta.jkr` / `save.jkr`  
+**Profile (all OS):** `Balatro\profile.jkr` (same folder as `1/`)
 
-**Windows:**
-```
-C:\Users\{Your_User}\AppData\Roaming\Balatro\1\meta.jkr
-C:\Users\{Your_User}\AppData\Roaming\Balatro\1\save.jkr
-C:\Users\{Your_User}\AppData\Roaming\Balatro\profile.jkr
-```
+### Quick Start
 
-**macOS:**
-```
-~/Library/Application Support/Balatro/1/meta.jkr
-~/Library/Application Support/Balatro/1/save.jkr
-~/Library/Application Support/Balatro/profile.jkr
-```
+1. Open `index.html` in your browser
+2. Import your `.jkr` file using the sidebar or tab buttons
+3. Make your changes — click cards to toggle unlock state, edit fields in Profile/Save editor
+4. Click **Export .jkr** (or **Save & Export** in Profile) to save
+5. **Close Balatro completely**, backup your original file, then replace it with the exported one
 
-**Linux / Steam Deck:**
-```
-~/.local/share/Balatro/1/meta.jkr
-~/.local/share/Balatro/1/save.jkr
-~/.local/share/Balatro/profile.jkr
-```
-
-### Working with the Editor
-
-#### Importing Your Save (meta.jkr)
-
-1. Click **"Import .jkr"** button in the sidebar
-2. Select your `meta.jkr` file from Balatro folder
-3. Wait for the file to load (you'll see a success notification)
-4. All your current unlocks will appear in the editor
-
-#### Importing Your Profile (profile.jkr)
-
-1. Click **"Profile"** in the sidebar navigation (below the category dropdown)
-2. Click **"Import profile.jkr"** button
-3. Select your `profile.jkr` file from Balatro folder
-4. Your profile statistics will load and be ready for editing
-
-#### Importing Your Save (save.jkr)
-
-1. Click **"Edit Games"** in the sidebar navigation
-2. Click **"Import save.jkr"** button
-3. Select your `save.jkr` file from Balatro folder
-4. Navigate between tabs (Game, Deck, Jokers, Consumables, Vouchers, Planets) to edit different aspects
-
-#### Editing Cards
-
-1. **Category Dropdown**: Select a card category (Jokers, Tarots, Planets, etc.)
-2. **Sidebar Navigation**: Switch between **Profile** (stats editor) and **Edit Games** (save editor)
-3. **Search Bar**: Filter cards by typing their name
-4. **Card Grid**: Click any card to unlock/lock it
-5. **Visual States**:
-   - Green border: Card is unlocked
-   - Yellow: Card is discovered
-   - Red: Card is locked
-
-#### Editing Profile Statistics
-
-Once you've imported your profile.jkr:
-
-1. **Enable Edit Mode**: Click the "Edit Mode" button to enable editing
-2. **Player Name**: Click the name field to change your profile name
-3. **High Scores**: Edit any high score value (Highest Ante, Best Hand, Most Money, Win Streak, etc.)
-4. **Career Statistics**: Modify total counts (Wins, Losses, Hands Played, Dollars Earned, etc.)
-5. **Progress Tracking**: Adjust completion percentages
-   - Challenges Completed (max 20)
-   - Deck Stakes (max 120)
-   - Joker Stickers (max 1200)
-   - Items Discovered (max 340)
-6. **Challenge Progress**: Click on challenges to mark them as completed/incomplete
-7. **Deck Statistics**: View (read-only) detailed stats for each deck including wins, losses, and win rates
-
-Progress bars update automatically as you edit values.
-
-#### Bulk Operations
-
-- **Unlock All**: Unlocks all cards in the current category
-- **Lock All**: Locks all cards in the current category
-
-#### Exporting Your Changes
-
-**For meta.jkr:**
-
-1. After making your modifications, click **"Export .jkr"**
-2. Save the file to your computer
-3. **Close Balatro completely** (if running)
-4. **Backup your original file** (highly recommended)
-5. Replace the original `meta.jkr` at the Balatro folder location
-6. Start Balatro and enjoy your changes
-
-**For profile.jkr:**
-
-1. After editing your statistics, click **"Save & Export"**
-2. Save the file as `profile.jkr`
-3. **Close Balatro completely** (if running)
-4. **Backup your original file** (highly recommended)
-5. Replace the original `profile.jkr` at the Balatro folder location
-6. Start Balatro to see your updated profile
-
-**For save.jkr:**
-
-1. After editing your game, click **"Export .jkr"** in the save editor
-2. Save the file as `save.jkr`
-3. **Close Balatro completely** (if running)
-4. **Backup your original file** (highly recommended)
-5. Replace the original `save.jkr` at the Balatro folder location
-6. Start Balatro to play with your modified game
-
-### External Libraries
-
-- **Font Awesome**: 7.1.0 - Icon library for UI elements
-- **Google Fonts**: Inter font family
-- **Pako**: 2.1.0 - Zlib compression/decompression for JKR files
-
-### Recent Improvements
-
-- **Save Game Editor**: Full save.jkr editing with 6 tabs (Game, Deck, Jokers, Consumables, Vouchers, Planets) including bulk deck operations, joker search modal, and Oops All 6s lucky card detection
-- **i18n System**: Full internationalization with language toggle (EN/ES) — all text translated
-- **Profile Statistics Editor**: In-depth profile.jkr editing with high scores, career stats, progress tracking, deck stats, and challenge progress
-- **Skeleton Loading**: Clean loading placeholders with pulse animation while data loads
-- **Image Loading States**: Visual feedback for loading, loaded, and error states on card images
-- **Accessibility**: Keyboard navigation (tabindex, Enter/Space handlers), focus-visible outlines, ARIA roles
-- **Export Guards**: Prevents concurrent exports with `_exportingMeta` / `_exportingProfile` / `_exportingSave` flags
-- **Security Dialog**: Custom modal on every export confirming the file is safe, with link to GitHub source code
-- **Sidebar Restructure**: Dedicated Profile and Edit Games navigation alongside the category dropdown
+Cards show **green** (unlocked), **yellow** (discovered), or **red** (locked) borders. Progress bars update automatically as you edit.
 
 ---
 
-## Technical Features
+## Tech Stack
 
-### Optimizations
-
-- **Lazy Loading**: Images from Balatro Wiki
-- **Skeleton Loading**: Visual feedback during data loading
-- **Client-Side Processing**: All JKR conversions happen in your browser
-- **No Server Required**: Works offline after initial load
-- **Mobile First**: Design optimized for all devices
-
----
-
-## Troubleshooting
-
-### Editor Not Opening
-
-**Problem**: Double-clicking index.html doesn't work
-
-**Solution**: 
-- Right-click `index.html` → "Open with" → Select your preferred browser
-- Or drag and drop `index.html` into an open browser window
-
-### Images Not Loading
-
-**Problem**: Card images show placeholder icons
-
-**Solution**: 
-- Images are loaded from Balatro Wiki with automatic fallback between URL patterns
-- Successfully loaded images are cached in your browser (localStorage) for future sessions
-- If images fail, the loader silently tries alternative naming conventions before showing a placeholder
-- Check your internet connection if no images load at all
-- Some cards may not have images available on the wiki
-
-### Import/Export Not Working
-
-**Problem**: Can't import or export .jkr files
-
-**Solution**:
-- Make sure you're using a modern browser (Chrome 90+, Firefox 88+, etc.)
-- Check browser console (F12) for error messages
-- Verify the file you're importing is a valid Balatro save file
-
-### Profile Not Loading
-
-**Problem**: Profile tab shows "No Profile Loaded"
-
-**Solution**: 
-- Make sure you're importing the `profile.jkr` file (not `meta.jkr` or `save.jkr`)
-- Verify the file is from a valid Balatro save
-- Try importing again after refreshing the page
-
-### Save Editor Not Loading
-
-**Problem**: Save editor tab shows "Save Editor module not loaded"
-
-**Solution**:
-- Make sure you're loading the page via `index.html` (not opening individual files)
-- Check browser console (F12) for errors
-- Verify `save-editor.js` exists in `public/js/`
-
-### Changes Not Saving in Game
-
-**Problem**: Exported file doesn't work in Balatro
-
-**Solution**:
-1. Make sure Balatro is completely closed before replacing files
-2. Backup your original files first
-3. Verify you're replacing the correct file in the correct location
-4. Check that the file extension is exactly `.jkr` (not `.jkr.txt`)
+- **Vanilla JS SPA** — no framework, no build step, no bundler, no package.json
+- **CSS3** with custom properties, Flexbox & Grid, responsive media queries
+- **ES6+ JavaScript** — DOM manipulation, Fetch API, client-side JKR processing
+- **CDN deps**: Font Awesome 7.1, Inter font, Pako 2.1.0 (zlib compression)
 
 ---
 
@@ -376,23 +152,11 @@ Progress bars update automatically as you edit values.
 
 This project implements client-side JKR file processing inspired by the format documentation from **[BalatroSaveEditor](https://github.com/TeddyHuang-00/BalatroSaveEditor)** by TeddyHuang-00.
 
-- **Repository**: [github.com/TeddyHuang-00/BalatroSaveEditor](https://github.com/TeddyHuang-00/BalatroSaveEditor)
-
----
-
-## Useful Links
-
-- [Balatro on Steam](https://store.steampowered.com/app/2379780/Balatro/)
-- [LocalThunk on Twitter/X](https://x.com/localthunk)
-- [Balatro Wiki](https://balatrogame.fandom.com/)
-- [Official Balatro Website](https://www.playbalatro.com/)
-- [BalatroSaveEditor Repository](https://github.com/TeddyHuang-00/BalatroSaveEditor)
-
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
@@ -400,10 +164,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**MatFon73**
-
-[![GitHub](https://img.shields.io/badge/GitHub-MatFon73-181717?style=for-the-badge&logo=github)](https://github.com/MatFon73)
-[![Twitter](https://img.shields.io/badge/Twitter-@MatFon73-1DA1F2?style=for-the-badge&logo=twitter)](https://x.com/MatFon73)
+**MatFon73** · [GitHub](https://github.com/MatFon73) · [Twitter](https://x.com/MatFon73)
 
 _Systems Engineer_
 
