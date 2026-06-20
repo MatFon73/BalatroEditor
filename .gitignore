@@ -1,7 +1,7 @@
 # profile
 data/profile.json
 
-# npm (not used — pako loaded from CDN)
+# AI tooling only — pako for JKR conversion, not used by the web app (loaded from CDN)
 node_modules/
 package.json
 package-lock.json
