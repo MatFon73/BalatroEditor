@@ -3,30 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-i18n="app.title">Balatro Editor</title>
+    <title data-i18n="app.title">Balatro Editor — Free Save File Editor for Balatro</title>
+
+    <!-- Google Search Console -->
+    <meta name="google-site-verification" content="zoxX0lEOa5-j9_-ONbBww4QmzDWt7bPZkwZtRUGflp4" />
 
     <link rel="stylesheet" href="public/css/style.css">
     <link rel="stylesheet" href="public/css/profile.css">
     <link rel="stylesheet" href="public/css/save-editor.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css" crossorigin="anonymous">
 
-    <meta property="og:title" content="Balatro Editor">
-    <meta property="og:description" data-i18n="app.description" content="Balatro mod that allows editing the profile and joker collection.">
-    <meta property="og:image" content="https://matfon73.github.io/BalatroEditor/public/img/preview.jpg">
-    <meta property="og:url" content="https://matfon73.github.io/BalatroEditor/">
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Free browser-based editor for Balatro save files. Edit profile stats, manage joker collection, and export modified .jkr saves — no installation required.">
+    <meta name="robots" content="index, follow, max-snippet:300, max-image-preview:large">
+    <link rel="canonical" href="https://matfon73.github.io/BalatroEditor/">
+
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://matfon73.github.io/BalatroEditor/">
+    <meta property="og:title" content="Balatro Editor — Free Save File Editor for Balatro">
+    <meta property="og:description" content="Free browser-based editor for Balatro save files. Edit profile stats, manage joker collection, and export modified .jkr saves — no installation required.">
+    <meta property="og:image" content="https://matfon73.github.io/BalatroEditor/public/img/preview.jpg">
+    <meta property="og:image:alt" content="Balatro Editor — collection manager showing joker cards">
+    <meta property="og:site_name" content="Balatro Editor">
+    <meta property="og:locale" content="en_US">
 
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Balatro Editor">
-    <meta name="twitter:description" data-i18n="app.description" content="Balatro mod that allows editing the profile and joker collection.">
+    <meta name="twitter:site" content="@MatFon73">
+    <meta name="twitter:creator" content="@MatFon73">
+    <meta name="twitter:title" content="Balatro Editor — Free Save File Editor for Balatro">
+    <meta name="twitter:description" content="Free browser-based editor for Balatro save files. Edit profile stats, manage joker collection, and export modified .jkr saves.">
     <meta name="twitter:image" content="https://matfon73.github.io/BalatroEditor/public/img/preview.jpg">
+    <meta name="twitter:image:alt" content="Balatro Editor — collection manager showing joker cards">
 
+    <!-- Favicons -->
     <link rel="icon" type="image/ico" href="favicon.ico">
+    <link rel="icon" type="image/png" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
+
+    <!-- Structured Data: SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Balatro Editor",
+        "description": "Free browser-based editor for Balatro save files. Edit profile stats, manage joker collection, and export modified .jkr saves — no installation required.",
+        "url": "https://matfon73.github.io/BalatroEditor/",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any (browser-based)",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "author": {
+            "@type": "Person",
+            "name": "MatFon73",
+            "url": "https://x.com/MatFon73"
+        },
+        "softwareHelp": {
+            "@type": "CreativeWork",
+            "url": "https://github.com/MatFon73/BalatroEditor"
+        },
+        "screenshot": "https://matfon73.github.io/BalatroEditor/public/img/preview.jpg"
+    }
+    </script>
 </head>
 <body>
+    <!-- Skip to content for a11y -->
+    <a href="#content-container" class="sr-only">Skip to main content</a>
+
     <div class="mobile-header">
-        <button class="mobile-menu-btn" id="mobile-menu-toggle">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle navigation menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -47,15 +97,17 @@
             </div>
 
             <div class="search-box">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
-                <input type="text" id="search-input" data-i18n="search.placeholder" placeholder="Search cards...">
+                <label for="search-input" class="sr-only">Search cards</label>
+                <input type="text" id="search-input" data-i18n="search.placeholder" placeholder="Search cards..." aria-label="Search cards">
             </div>
 
             <div class="category-select">
-                <select id="category-select"></select>
+                <label for="category-select" class="sr-only">Card category</label>
+                <select id="category-select" aria-label="Card category"></select>
             </div>
 
             <div class="sidebar-separator"></div>
@@ -75,15 +127,15 @@
 
             <div class="sidebar-controls">
                 <div class="controls-row">
-                    <button id="unlock-all" class="control-btn">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button id="unlock-all" class="control-btn" aria-label="Unlock all cards (UNLOCK ALL)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                             <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
                         </svg>
                         <span data-i18n="btn.unlock_all">UNLOCK ALL</span>
                     </button>
-                    <button id="lock-all" class="control-btn">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button id="lock-all" class="control-btn" aria-label="Lock all cards (LOCK ALL)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                         </svg>
@@ -95,8 +147,8 @@
                         <i class="fa-solid fa-upload"></i> <span data-i18n="btn.import">IMPORT</span>
                         <input type="file" id="import-jkr" accept=".jkr" style="display: none;">
                     </label>
-                    <button id="export-jkr" class="control-btn primary">
-                        <i class="fa-solid fa-download"></i> <span data-i18n="btn.export">EXPORT</span>
+                    <button id="export-jkr" class="control-btn primary" aria-label="Export save file (EXPORT)">
+                        <i class="fa-solid fa-download" aria-hidden="true"></i> <span data-i18n="btn.export">EXPORT</span>
                     </button>
                 </div>
             </div>
@@ -113,11 +165,11 @@
                     <a href="https://github.com/TeddyHuang-00/BalatroSaveEditor" target="_blank" style="color: var(--gold);">BalatroSaveEditor</a>
                 </p>
                 <div class="social-links">
-                    <a href="https://x.com/MatFon73" target="_blank" data-i18n-title="footer.twitter" title="Twitter">
-                        <i class="fa-brands fa-square-x-twitter"></i>
+                    <a href="https://x.com/MatFon73" target="_blank" data-i18n-title="footer.twitter" title="Twitter" aria-label="Twitter profile of MatFon73">
+                        <i class="fa-brands fa-square-x-twitter" aria-hidden="true"></i>
                     </a>
-                    <a href="https://github.com/MatFon73" target="_blank" data-i18n-title="footer.github" title="GitHub">
-                        <i class="fa-brands fa-square-github"></i>
+                    <a href="https://github.com/MatFon73" target="_blank" data-i18n-title="footer.github" title="GitHub" aria-label="GitHub profile of MatFon73">
+                        <i class="fa-brands fa-square-github" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>

@@ -1,0 +1,41 @@
+# BalatroEditor — robots.txt
+# https://matfon73.github.io/BalatroEditor/
+
+User-agent: *
+Allow: /
+
+# Block internal/dev paths
+Disallow: /data/
+Disallow: /.agents/
+Disallow: /.atl/
+
+# AI Crawler policies
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Bytespider
+Disallow: /
+
+# Sitemaps
+Sitemap: https://matfon73.github.io/BalatroEditor/sitemap.xml
+
+# Crawl-delay for polite bots
+Crawl-delay: 2
