@@ -117,6 +117,15 @@ function getImageUrls(id, category) {
     }
 
     switch (category) {
+        case 'boosters': {
+            const [, family, size] = id.split('_');
+            const packName = (size === 'normal' ? '' : formatName(size) + '_') + formatName(family) + '_Pack';
+            for (const base of BASE_URLS) {
+                urls.push(base + packName + '.png');
+                urls.push(base + wikiName + '.png');
+            }
+            break;
+        }
         case 'jokers':
             for (const base of BASE_URLS) {
                 urls.push(base + wikiName + '_Joker.png');

@@ -230,6 +230,7 @@ function getItemsForCategory(category) {
         return [...new Set(items)].sort();
     }
     const allKeys = new Set([
+        ...(cat.catalog || []).map(name => cat.prefix + name),
         ...Object.keys(metaData.unlocked || {}),
         ...Object.keys(metaData.discovered || {}),
         ...Object.keys(metaData.alerted || {})
@@ -440,17 +441,18 @@ function getAllCollectionItems() {
         ...Object.keys(metaData.discovered),
         ...Object.keys(metaData.alerted),
         ...Object.values(CATEGORIES)
-            .filter(cat => cat.filter)
-            .flatMap(cat => cat.filter.map(name => cat.prefix + name))
+            .flatMap(cat => (cat.filter || cat.catalog || []).map(name => cat.prefix + name))
     ]);
 }
 
 function setCategoryState(category, state) {
     if (!CATEGORIES[category] || category === 'profile') return;
     for (const id of getItemsForCategory(category)) {
-        metaData.unlocked[id] = state === 'unlocked';
         metaData.discovered[id] = true;
-        metaData.alerted[id] = state === 'unlocked';
+        if (state === 'unlocked') {
+            metaData.unlocked[id] = true;
+            metaData.alerted[id] = true;
+        }
     }
     renderCategory(currentCategory);
 }

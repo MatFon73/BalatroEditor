@@ -12,6 +12,7 @@ const _translations = {
     "nav.modifiers": "Card Modifiers",
     "nav.tags": "Tags",
     "nav.blinds": "Blinds",
+    "nav.boosters": "Booster Packs",
     "nav.profile": "Profile",
     "nav.edit_games": "Edit Games",
     "nav.enhancements": "Enhancements",
@@ -22,7 +23,7 @@ const _translations = {
     "btn.unlock_all": "Unlock All",
     "btn.discover_all": "Discover All",
     "btn.unlock_category": "Unlock all in {category}",
-    "btn.discover_category": "Set all in {category} to Discovered",
+    "btn.discover_category": "Discover all in {category} (preserves unlocks)",
     "btn.lock_all": "Lock All",
     "btn.import": "Import",
     "btn.export": "Export",
@@ -216,6 +217,7 @@ const _translations = {
     "nav.modifiers": "Modificadores de Cartas",
     "nav.tags": "Etiquetas",
     "nav.blinds": "Ciegas",
+    "nav.boosters": "Paquetes de Refuerzo",
     "nav.profile": "Perfil",
     "nav.edit_games": "Editar Partidas",
     "nav.enhancements": "Mejoras",
@@ -226,7 +228,7 @@ const _translations = {
     "btn.unlock_all": "Desbloquear Todo",
     "btn.discover_all": "Descubrir Todo",
     "btn.unlock_category": "Desbloquear todo en {category}",
-    "btn.discover_category": "Marcar todo en {category} como descubierto",
+    "btn.discover_category": "Descubrir todo en {category} (conserva desbloqueos)",
     "btn.lock_all": "Bloquear Todo",
     "btn.import": "Importar",
     "btn.export": "Exportar",
@@ -446,7 +448,7 @@ function getCurrentLanguage() {
 }
 
 function populateDropdowns() {
-    const cats = ['jokers', 'tarots', 'planets', 'spectrals', 'vouchers', 'decks', 'modifiers', 'tags', 'blinds'];
+    const cats = ['jokers', 'tarots', 'planets', 'spectrals', 'vouchers', 'decks', 'boosters', 'modifiers', 'tags', 'blinds'];
     const select = document.getElementById('category-select');
     if (!select) return;
     select.innerHTML = cats.map(c =>
