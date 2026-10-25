@@ -213,7 +213,7 @@ function updateStats() {
 
 function getItemsForCategory(category) {
     const cat = CATEGORIES[category];
-    // Saves can omit cards entirely; the catalog defines the complete list.
+    // Saves can omit cards entirely; explicit lists include those missing items.
     if (cat.filter) {
         return cat.filter.map(name => cat.prefix + name).sort();
     }
@@ -236,7 +236,6 @@ function getItemsForCategory(category) {
         return [...new Set(items)].sort();
     }
     const allKeys = new Set([
-        ...(cat.catalog || []).map(name => cat.prefix + name),
         ...Object.keys(metaData.unlocked || {}),
         ...Object.keys(metaData.discovered || {}),
         ...Object.keys(metaData.alerted || {})
@@ -442,7 +441,7 @@ function getAllCollectionItems() {
         ...Object.keys(metaData.discovered),
         ...Object.keys(metaData.alerted),
         ...Object.values(CATEGORIES)
-            .flatMap(cat => (cat.filter || cat.catalog || []).map(name => cat.prefix + name))
+            .flatMap(cat => (cat.filter || []).map(name => cat.prefix + name))
     ]);
 }
 

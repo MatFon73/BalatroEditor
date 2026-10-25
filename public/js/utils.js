@@ -39,7 +39,7 @@ function showSafeDownloadModal(filename) {
 }
 
 const CATEGORIES = {
-    jokers: { prefix: 'j_', name: 'nav.jokers', catalog: [
+    jokers: { prefix: 'j_', name: 'nav.jokers', filter: [
         '8_ball', 'abstract', 'acrobat', 'ancient', 'arrowhead', 'astronomer',
         'banner', 'baron', 'baseball', 'blackboard', 'bloodstone', 'blue_joker',
         'blueprint', 'bootstraps', 'brainstorm', 'bull', 'burglar', 'burnt',
@@ -69,7 +69,7 @@ const CATEGORIES = {
     tarots: { prefix: 'c_', name: 'nav.tarots', filter: ['fool', 'magician', 'high_priestess', 'empress', 'emperor', 'heirophant', 'lovers', 'chariot', 'justice', 'hermit', 'wheel_of_fortune', 'strength', 'hanged_man', 'death', 'temperance', 'devil', 'tower', 'star', 'moon', 'sun', 'judgement', 'world'] },
     planets: { prefix: 'c_', name: 'nav.planets', filter: ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'planet_x', 'ceres', 'eris'] },
     spectrals: { prefix: 'c_', name: 'nav.spectrals', filter: ['familiar', 'grim', 'incantation', 'talisman', 'aura', 'wraith', 'sigil', 'ouija', 'ectoplasm', 'immolate', 'ankh', 'deja_vu', 'hex', 'trance', 'medium', 'cryptid', 'soul', 'black_hole'] },
-    vouchers: { prefix: 'v_', name: 'nav.vouchers', catalog: [
+    vouchers: { prefix: 'v_', name: 'nav.vouchers', filter: [
         'antimatter', 'blank', 'clearance_sale', 'crystal_ball', 'directors_cut', 'glow_up',
         'grabber', 'hieroglyph', 'hone', 'illusion', 'liquidation', 'magic_trick',
         'money_tree', 'nacho_tong', 'observatory', 'omen_globe', 'overstock_norm', 'overstock_plus',
@@ -77,7 +77,7 @@ const CATEGORIES = {
         'reroll_glut', 'reroll_surplus', 'retcon', 'seed_money', 'tarot_merchant', 'tarot_tycoon',
         'telescope', 'wasteful'
     ] },
-    decks: { prefix: 'b_', name: 'nav.decks', catalog: [
+    decks: { prefix: 'b_', name: 'nav.decks', filter: [
         'abandoned', 'anaglyph', 'black', 'blue', 'challenge', 'checkered',
         'erratic', 'ghost', 'green', 'magic', 'nebula', 'painted',
         'plasma', 'red', 'yellow', 'zodiac'
