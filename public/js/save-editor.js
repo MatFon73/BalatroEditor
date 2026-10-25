@@ -1546,7 +1546,6 @@ function createDefaultConsumableCard(index) {
             'discount-percent': 0
         }
     };
-    return obj;
 }
 
 function createDefaultJokerCard(jokerId, index) {
