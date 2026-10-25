@@ -54,8 +54,8 @@ const CATEGORIES = {
             { prefix: 'soul', name: 'nav.seals', isSeal: true }
         ]
     },
-    tags: { prefix: 'tag_', name: 'nav.tags' },
-    blinds: { prefix: 'bl_', name: 'nav.blinds' },
+    tags: { prefix: 'tag_', name: 'nav.tags', filter: ['boss', 'buffoon', 'charm', 'coupon', 'd_six', 'double', 'economy', 'ethereal', 'foil', 'garbage', 'handy', 'holo', 'investment', 'juggle', 'meteor', 'negative', 'orbital', 'polychrome', 'rare', 'skip', 'standard', 'top_up', 'uncommon', 'voucher'] },
+    blinds: { prefix: 'bl_', name: 'nav.blinds', filter: ['arm', 'big', 'club', 'eye', 'final_acorn', 'final_bell', 'final_heart', 'final_leaf', 'final_vessel', 'fish', 'flint', 'goad', 'head', 'hook', 'house', 'manacle', 'mark', 'mouth', 'needle', 'ox', 'pillar', 'plant', 'psychic', 'serpent', 'small', 'tooth', 'wall', 'water', 'wheel', 'window'] },
     profile: { name: 'nav.profile' }
 };
 

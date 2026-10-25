@@ -212,6 +212,10 @@ function updateStats() {
 
 function getItemsForCategory(category) {
     const cat = CATEGORIES[category];
+    // Saves can omit cards entirely; the catalog defines the complete list.
+    if (cat.filter) {
+        return cat.filter.map(name => cat.prefix + name).sort();
+    }
     const items = [];
     if (cat.isMultiple) {
         cat.subcategories.forEach(subcat => {
@@ -231,17 +235,9 @@ function getItemsForCategory(category) {
         ...Object.keys(metaData.alerted || {})
     ]);
     for (let key of allKeys) {
-        if (cat.filter) {
-            const itemName = key.replace(cat.prefix, '');
-            if (cat.filter.includes(itemName)) {
-                items.push(key);
-            }
-        } else if (cat.isSeal && key === 'soul') {
+        if (cat.isSeal && key === 'soul') {
             items.push(key);
         } else if (key.startsWith(cat.prefix) && !key.startsWith('p_')) {
-            if (category === 'tarots' || category === 'planets' || category === 'spectrals') {
-                continue;
-            }
             items.push(key);
         }
     }
@@ -426,8 +422,19 @@ function toggleItem(id) {
     updateStats();
 }
 
+function getAllCollectionItems() {
+    return new Set([
+        ...Object.keys(metaData.unlocked),
+        ...Object.keys(metaData.discovered),
+        ...Object.keys(metaData.alerted),
+        ...Object.values(CATEGORIES)
+            .filter(cat => cat.filter)
+            .flatMap(cat => cat.filter.map(name => cat.prefix + name))
+    ]);
+}
+
 function unlockAll() {
-    for (let key in metaData.unlocked) {
+    for (const key of getAllCollectionItems()) {
         metaData.unlocked[key] = true;
         metaData.discovered[key] = true;
         metaData.alerted[key] = true;
@@ -436,7 +443,7 @@ function unlockAll() {
 }
 
 function lockAll() {
-    for (let key in metaData.unlocked) {
+    for (const key of getAllCollectionItems()) {
         metaData.unlocked[key] = false;
         metaData.discovered[key] = false;
         metaData.alerted[key] = false;
