@@ -656,48 +656,48 @@ body::after {
     outline-offset: 2px;
 }
 
-.item-card.unlocked {
+.item-card.discovered {
     border-color: var(--gold);
     box-shadow: 0 0 12px rgba(255, 177, 0, 0.08), inset 0 0 20px rgba(255, 177, 0, 0.03);
 }
 
-.item-card.unlocked::before {
+.item-card.discovered::before {
     background: linear-gradient(135deg, var(--gold) 0%, var(--gold-bright) 100%);
     opacity: 0.06;
 }
 
-.item-card.unlocked:hover {
+.item-card.discovered:hover {
     border-color: var(--gold-bright);
     box-shadow: 0 0 24px rgba(255, 177, 0, 0.15), 0 8px 24px rgba(0,0,0,0.3);
 }
 
-.item-card.unlocked .status-badge {
+.item-card.discovered .status-badge {
     background: var(--gold);
     box-shadow: 0 0 8px rgba(255, 177, 0, 0.5);
 }
 
-.item-card.discovered {
+.item-card.unlocked {
     border-color: var(--blue-dark);
     opacity: 0.85;
 }
 
-.item-card.discovered::before {
+.item-card.unlocked::before {
     background: linear-gradient(135deg, var(--blue-primary) 0%, var(--blue-bright) 100%);
     opacity: 0.04;
 }
 
-.item-card.discovered:hover {
+.item-card.unlocked:hover {
     border-color: var(--blue-bright);
     box-shadow: 0 0 20px rgba(10, 132, 255, 0.12);
     opacity: 1;
 }
 
-.item-card.discovered .status-badge {
+.item-card.unlocked .status-badge {
     background: var(--blue-primary);
     box-shadow: 0 0 8px rgba(10, 132, 255, 0.4);
 }
 
-.item-card.discovered img {
+.item-card.unlocked img {
     filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3)) brightness(0.9);
 }
 
@@ -803,13 +803,13 @@ body::after {
     display: inline-block;
 }
 
-.item-card.unlocked .state-indicator {
+.item-card.discovered .state-indicator {
     color: var(--gold);
     background: rgba(255, 177, 0, 0.08);
     border: 1px solid rgba(255, 177, 0, 0.15);
 }
 
-.item-card.discovered .state-indicator {
+.item-card.unlocked .state-indicator {
     color: var(--blue-bright);
     background: rgba(10, 132, 255, 0.08);
     border: 1px solid rgba(10, 132, 255, 0.15);

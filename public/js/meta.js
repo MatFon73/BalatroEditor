@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('unlock-all').addEventListener('click', unlockAll);
     document.getElementById('lock-all').addEventListener('click', lockAll);
+    document.getElementById('discover-all').addEventListener('click', discoverAll);
 
     const exportJkrBtn = document.getElementById('export-jkr');
     if (exportJkrBtn) {
@@ -192,8 +193,8 @@ function showSkeletonLoading() {
 
 function updateStats() {
     const items = getItemsForCategory(currentCategory);
-    const unlocked = items.filter(item => metaData.unlocked[item] === true).length;
-    const discovered = items.filter(item => metaData.discovered[item] === true && metaData.unlocked[item] !== true).length;
+    const unlocked = items.filter(item => getItemState(item) !== 'locked').length;
+    const discovered = items.filter(item => metaData.discovered[item] === true).length;
     const total = items.length;
     const statsContainer = document.querySelector('.stats');
     if (statsContainer) {
@@ -219,7 +220,12 @@ function getItemsForCategory(category) {
     const items = [];
     if (cat.isMultiple) {
         cat.subcategories.forEach(subcat => {
-            for (let key in metaData.unlocked) {
+            const allKeys = new Set([
+                ...Object.keys(metaData.unlocked),
+                ...Object.keys(metaData.discovered),
+                ...Object.keys(metaData.alerted)
+            ]);
+            for (const key of allKeys) {
                 if (subcat.isSeal && key === 'soul') {
                     items.push(key);
                 } else if (key.startsWith(subcat.prefix) && !key.startsWith('p_')) {
@@ -286,8 +292,8 @@ function renderCategory(category) {
         }
         const cat = CATEGORIES[category];
         const allItems = getItemsForCategory(category);
-        const unlocked = allItems.filter(item => metaData.unlocked[item] === true).length;
-        const discovered = allItems.filter(item => metaData.discovered[item] === true && metaData.unlocked[item] !== true).length;
+        const unlocked = allItems.filter(item => getItemState(item) !== 'locked').length;
+        const discovered = allItems.filter(item => metaData.discovered[item] === true).length;
         const total = allItems.length;
 
         const html = `
@@ -381,8 +387,8 @@ function showCategorySkeletonLoading(category) {
 function getItemState(id) {
     const unlocked = metaData.unlocked[id];
     const discovered = metaData.discovered[id];
+    if (discovered === true) return 'discovered';
     if (unlocked === true) return 'unlocked';
-    if (discovered === true && unlocked !== true) return 'discovered';
     return 'locked';
 }
 
@@ -409,18 +415,9 @@ function getImageUrl(id, category) {
 
 function toggleItem(id) {
     const currentState = getItemState(id);
-    if (currentState === 'locked') {
-        metaData.discovered[id] = true;
-        metaData.unlocked[id] = false;
-    } else if (currentState === 'discovered') {
-        metaData.discovered[id] = true;
-        metaData.unlocked[id] = true;
-        metaData.alerted[id] = true;
-    } else {
-        metaData.discovered[id] = false;
-        metaData.unlocked[id] = false;
-        metaData.alerted[id] = false;
-    }
+    const nextState = currentState === 'locked' ? 'unlocked' :
+        currentState === 'unlocked' ? 'discovered' : 'locked';
+    setItemState(id, nextState);
     const card = document.querySelector(`[data-id="${id}"]`);
     if (card) {
         const newState = getItemState(id);
@@ -445,32 +442,35 @@ function getAllCollectionItems() {
     ]);
 }
 
-function setCategoryState(category, state) {
-    if (!CATEGORIES[category] || category === 'profile') return;
-    for (const id of getItemsForCategory(category)) {
-        metaData.discovered[id] = true;
-        if (state === 'unlocked') {
-            metaData.unlocked[id] = true;
-            metaData.alerted[id] = true;
-        }
+function setItemState(id, state) {
+    metaData.unlocked[id] = state !== 'locked';
+    metaData.discovered[id] = state === 'discovered';
+    metaData.alerted[id] = state !== 'locked';
+}
+
+function setCollectionState(items, state) {
+    for (const id of items) {
+        // Unlocking must not erase an existing discovery.
+        const targetState = state === 'unlocked' && metaData.discovered[id] === true ?
+            'discovered' : state;
+        setItemState(id, targetState);
     }
     renderCategory(currentCategory);
+}
+
+function setCategoryState(category, state) {
+    if (!CATEGORIES[category] || category === 'profile') return;
+    setCollectionState(getItemsForCategory(category), state);
 }
 
 function unlockAll() {
-    for (const key of getAllCollectionItems()) {
-        metaData.unlocked[key] = true;
-        metaData.discovered[key] = true;
-        metaData.alerted[key] = true;
-    }
-    renderCategory(currentCategory);
+    setCollectionState(getAllCollectionItems(), 'unlocked');
+}
+
+function discoverAll() {
+    setCollectionState(getAllCollectionItems(), 'discovered');
 }
 
 function lockAll() {
-    for (const key of getAllCollectionItems()) {
-        metaData.unlocked[key] = false;
-        metaData.discovered[key] = false;
-        metaData.alerted[key] = false;
-    }
-    renderCategory(currentCategory);
+    setCollectionState(getAllCollectionItems(), 'locked');
 }
