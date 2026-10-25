@@ -292,7 +292,17 @@ function renderCategory(category) {
         const html = `
             <div class="content-section active">
                 <div class="category-header">
-                    <h2>${__(cat.name)}</h2>
+                    <div class="category-heading">
+                        <h2>${__(cat.name)}</h2>
+                        <div class="category-actions">
+                            <button type="button" class="control-btn" id="unlock-category" title="${__('btn.unlock_category', { category: __(cat.name) })}">
+                                <i class="fa-solid fa-unlock" aria-hidden="true"></i> ${__('btn.unlock_all')}
+                            </button>
+                            <button type="button" class="control-btn" id="discover-category" title="${__('btn.discover_category', { category: __(cat.name) })}">
+                                <i class="fa-solid fa-eye" aria-hidden="true"></i> ${__('btn.discover_all')}
+                            </button>
+                        </div>
+                    </div>
                     <div class="stats">
                         <div class="stat-item">
                             <div class="stat-label">${__('stat.unlocked')}</div>
@@ -316,6 +326,8 @@ function renderCategory(category) {
         const applyRender = () => {
             if (currentCategory !== category) return;
             container.innerHTML = html;
+            document.getElementById('unlock-category').addEventListener('click', () => setCategoryState(category, 'unlocked'));
+            document.getElementById('discover-category').addEventListener('click', () => setCategoryState(category, 'discovered'));
             document.querySelectorAll('.item-card').forEach(card => {
                 card.addEventListener('click', () => toggleItem(card.dataset.id));
                 card.addEventListener('keydown', (e) => {
@@ -431,6 +443,16 @@ function getAllCollectionItems() {
             .filter(cat => cat.filter)
             .flatMap(cat => cat.filter.map(name => cat.prefix + name))
     ]);
+}
+
+function setCategoryState(category, state) {
+    if (!CATEGORIES[category] || category === 'profile') return;
+    for (const id of getItemsForCategory(category)) {
+        metaData.unlocked[id] = state === 'unlocked';
+        metaData.discovered[id] = true;
+        metaData.alerted[id] = state === 'unlocked';
+    }
+    renderCategory(currentCategory);
 }
 
 function unlockAll() {

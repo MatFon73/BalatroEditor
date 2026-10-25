@@ -526,6 +526,29 @@ body::after {
     text-shadow: 0 0 20px rgba(255, 177, 0, 0.12);
 }
 
+.category-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px 20px;
+    margin-bottom: 14px;
+}
+
+.category-heading h2 {
+    margin-bottom: 0;
+}
+
+.category-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.category-actions .control-btn {
+    min-height: 44px;
+}
+
 .stats {
     display: flex;
     gap: 16px;
