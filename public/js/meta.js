@@ -302,6 +302,9 @@ function renderCategory(category) {
                     <div class="category-heading">
                         <h2>${__(cat.name)}</h2>
                         <div class="category-actions">
+                            <button type="button" class="control-btn" id="lock-category" title="${__('btn.lock_category', { category: __(cat.name) })}">
+                                <i class="fa-solid fa-lock" aria-hidden="true"></i> ${__('btn.lock_all')}
+                            </button>
                             <button type="button" class="control-btn" id="unlock-category" title="${__('btn.unlock_category', { category: __(cat.name) })}">
                                 <i class="fa-solid fa-unlock" aria-hidden="true"></i> ${__('btn.unlock_all')}
                             </button>
@@ -334,6 +337,7 @@ function renderCategory(category) {
             if (currentCategory !== category) return;
             container.innerHTML = html;
             document.getElementById('unlock-category').addEventListener('click', () => setCategoryState(category, 'unlocked'));
+            document.getElementById('lock-category').addEventListener('click', () => setCategoryState(category, 'locked'));
             document.getElementById('discover-category').addEventListener('click', () => setCategoryState(category, 'discovered'));
             document.querySelectorAll('.item-card').forEach(card => {
                 card.addEventListener('click', () => toggleItem(card.dataset.id));
