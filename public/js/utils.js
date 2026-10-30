@@ -39,12 +39,59 @@ function showSafeDownloadModal(filename) {
 }
 
 const CATEGORIES = {
-    jokers: { prefix: 'j_', name: 'nav.jokers' },
+    jokers: { prefix: 'j_', name: 'nav.jokers', filter: [
+        '8_ball', 'abstract', 'acrobat', 'ancient', 'arrowhead', 'astronomer',
+        'banner', 'baron', 'baseball', 'blackboard', 'bloodstone', 'blue_joker',
+        'blueprint', 'bootstraps', 'brainstorm', 'bull', 'burglar', 'burnt',
+        'business', 'campfire', 'caino', 'card_sharp', 'cartomancer', 'castle',
+        'cavendish', 'ceremonial', 'certificate', 'chaos', 'chicot', 'clever',
+        'cloud_9', 'constellation', 'crafty', 'crazy', 'credit_card', 'delayed_grat',
+        'devious', 'diet_cola', 'dna', 'drivers_license', 'droll', 'drunkard',
+        'duo', 'dusk', 'egg', 'erosion', 'even_steven', 'faceless',
+        'family', 'fibonacci', 'flash', 'flower_pot', 'fortune_teller', 'four_fingers',
+        'gift', 'glass', 'gluttenous_joker', 'golden', 'greedy_joker', 'green_joker',
+        'gros_michel', 'hack', 'half', 'hallucination', 'hanging_chad', 'hiker',
+        'hit_the_road', 'hologram', 'ice_cream', 'idol', 'invisible', 'joker',
+        'jolly', 'juggler', 'loyalty_card', 'luchador', 'lucky_cat', 'lusty_joker',
+        'mad', 'madness', 'mail', 'marble', 'matador', 'merry_andy',
+        'midas_mask', 'mime', 'misprint', 'mr_bones', 'mystic_summit', 'obelisk',
+        'odd_todd', 'onyx_agate', 'oops', 'order', 'pareidolia', 'perkeo',
+        'photograph', 'popcorn', 'raised_fist', 'ramen', 'red_card', 'reserved_parking',
+        'ride_the_bus', 'riff_raff', 'ring_master', 'rocket', 'rough_gem', 'runner',
+        'satellite', 'scary_face', 'scholar', 'seance', 'seeing_double', 'selzer',
+        'shoot_the_moon', 'shortcut', 'sixth_sense', 'sly', 'smeared', 'smiley',
+        'sock_and_buskin', 'space', 'splash', 'square', 'steel_joker', 'stencil',
+        'stone', 'stuntman', 'supernova', 'superposition', 'swashbuckler', 'throwback',
+        'ticket', 'to_the_moon', 'todo_list', 'trading', 'tribe', 'triboulet',
+        'trio', 'troubadour', 'trousers', 'turtle_bean', 'vagabond', 'vampire',
+        'walkie_talkie', 'wee', 'wily', 'wrathful_joker', 'yorick', 'zany'
+    ] },
     tarots: { prefix: 'c_', name: 'nav.tarots', filter: ['fool', 'magician', 'high_priestess', 'empress', 'emperor', 'heirophant', 'lovers', 'chariot', 'justice', 'hermit', 'wheel_of_fortune', 'strength', 'hanged_man', 'death', 'temperance', 'devil', 'tower', 'star', 'moon', 'sun', 'judgement', 'world'] },
     planets: { prefix: 'c_', name: 'nav.planets', filter: ['mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'planet_x', 'ceres', 'eris'] },
     spectrals: { prefix: 'c_', name: 'nav.spectrals', filter: ['familiar', 'grim', 'incantation', 'talisman', 'aura', 'wraith', 'sigil', 'ouija', 'ectoplasm', 'immolate', 'ankh', 'deja_vu', 'hex', 'trance', 'medium', 'cryptid', 'soul', 'black_hole'] },
-    vouchers: { prefix: 'v_', name: 'nav.vouchers' },
-    decks: { prefix: 'b_', name: 'nav.decks' },
+    vouchers: { prefix: 'v_', name: 'nav.vouchers', filter: [
+        'antimatter', 'blank', 'clearance_sale', 'crystal_ball', 'directors_cut', 'glow_up',
+        'grabber', 'hieroglyph', 'hone', 'illusion', 'liquidation', 'magic_trick',
+        'money_tree', 'nacho_tong', 'observatory', 'omen_globe', 'overstock_norm', 'overstock_plus',
+        'paint_brush', 'palette', 'petroglyph', 'planet_merchant', 'planet_tycoon', 'recyclomancy',
+        'reroll_glut', 'reroll_surplus', 'retcon', 'seed_money', 'tarot_merchant', 'tarot_tycoon',
+        'telescope', 'wasteful'
+    ] },
+    decks: { prefix: 'b_', name: 'nav.decks', filter: [
+        'abandoned', 'anaglyph', 'black', 'blue', 'challenge', 'checkered',
+        'erratic', 'ghost', 'green', 'magic', 'nebula', 'painted',
+        'plasma', 'red', 'yellow', 'zodiac'
+    ] },
+    boosters: { prefix: 'p_', name: 'nav.boosters', filter: [
+        'arcana_normal_1', 'arcana_normal_2', 'arcana_normal_3', 'arcana_normal_4',
+        'arcana_jumbo_1', 'arcana_jumbo_2', 'arcana_mega_1', 'arcana_mega_2',
+        'buffoon_normal_1', 'buffoon_normal_2', 'buffoon_jumbo_1', 'buffoon_mega_1',
+        'celestial_normal_1', 'celestial_normal_2', 'celestial_normal_3', 'celestial_normal_4',
+        'celestial_jumbo_1', 'celestial_jumbo_2', 'celestial_mega_1', 'celestial_mega_2',
+        'spectral_normal_1', 'spectral_normal_2', 'spectral_jumbo_1', 'spectral_mega_1',
+        'standard_normal_1', 'standard_normal_2', 'standard_normal_3', 'standard_normal_4',
+        'standard_jumbo_1', 'standard_jumbo_2', 'standard_mega_1', 'standard_mega_2'
+    ] },
     modifiers: {
         name: 'nav.modifiers',
         isMultiple: true,
@@ -54,8 +101,8 @@ const CATEGORIES = {
             { prefix: 'soul', name: 'nav.seals', isSeal: true }
         ]
     },
-    tags: { prefix: 'tag_', name: 'nav.tags' },
-    blinds: { prefix: 'bl_', name: 'nav.blinds' },
+    tags: { prefix: 'tag_', name: 'nav.tags', filter: ['boss', 'buffoon', 'charm', 'coupon', 'd_six', 'double', 'economy', 'ethereal', 'foil', 'garbage', 'handy', 'holo', 'investment', 'juggle', 'meteor', 'negative', 'orbital', 'polychrome', 'rare', 'skip', 'standard', 'top_up', 'uncommon', 'voucher'] },
+    blinds: { prefix: 'bl_', name: 'nav.blinds', filter: ['arm', 'big', 'club', 'eye', 'final_acorn', 'final_bell', 'final_heart', 'final_leaf', 'final_vessel', 'fish', 'flint', 'goad', 'head', 'hook', 'house', 'manacle', 'mark', 'mouth', 'needle', 'ox', 'pillar', 'plant', 'psychic', 'serpent', 'small', 'tooth', 'wall', 'water', 'wheel', 'window'] },
     profile: { name: 'nav.profile' }
 };
 

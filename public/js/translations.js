@@ -12,6 +12,7 @@ const _translations = {
     "nav.modifiers": "Card Modifiers",
     "nav.tags": "Tags",
     "nav.blinds": "Blinds",
+    "nav.boosters": "Booster Packs",
     "nav.profile": "Profile",
     "nav.edit_games": "Edit Games",
     "nav.enhancements": "Enhancements",
@@ -20,6 +21,10 @@ const _translations = {
     "nav.coming_soon": "Coming Soon",
     "search.placeholder": "Search cards...",
     "btn.unlock_all": "Unlock All",
+    "btn.discover_all": "Discover All",
+    "btn.unlock_category": "Unlock all in {category} (preserves discoveries)",
+    "btn.lock_category": "Lock all in {category}",
+    "btn.discover_category": "Unlock and discover all in {category}",
     "btn.lock_all": "Lock All",
     "btn.import": "Import",
     "btn.export": "Export",
@@ -213,6 +218,7 @@ const _translations = {
     "nav.modifiers": "Modificadores de Cartas",
     "nav.tags": "Etiquetas",
     "nav.blinds": "Ciegas",
+    "nav.boosters": "Paquetes de Refuerzo",
     "nav.profile": "Perfil",
     "nav.edit_games": "Editar Partidas",
     "nav.enhancements": "Mejoras",
@@ -221,6 +227,10 @@ const _translations = {
     "nav.coming_soon": "Pr\u00f3ximamente",
     "search.placeholder": "Buscar cartas...",
     "btn.unlock_all": "Desbloquear Todo",
+    "btn.discover_all": "Descubrir Todo",
+    "btn.unlock_category": "Desbloquear todo en {category} (conserva descubrimientos)",
+    "btn.lock_category": "Bloquear todo en {category}",
+    "btn.discover_category": "Desbloquear y descubrir todo en {category}",
     "btn.lock_all": "Bloquear Todo",
     "btn.import": "Importar",
     "btn.export": "Exportar",
@@ -440,7 +450,7 @@ function getCurrentLanguage() {
 }
 
 function populateDropdowns() {
-    const cats = ['jokers', 'tarots', 'planets', 'spectrals', 'vouchers', 'decks', 'modifiers', 'tags', 'blinds'];
+    const cats = ['jokers', 'tarots', 'planets', 'spectrals', 'vouchers', 'decks', 'boosters', 'modifiers', 'tags', 'blinds'];
     const select = document.getElementById('category-select');
     if (!select) return;
     select.innerHTML = cats.map(c =>

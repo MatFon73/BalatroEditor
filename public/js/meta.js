@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('unlock-all').addEventListener('click', unlockAll);
     document.getElementById('lock-all').addEventListener('click', lockAll);
+    document.getElementById('discover-all').addEventListener('click', discoverAll);
 
     const exportJkrBtn = document.getElementById('export-jkr');
     if (exportJkrBtn) {
@@ -192,8 +193,8 @@ function showSkeletonLoading() {
 
 function updateStats() {
     const items = getItemsForCategory(currentCategory);
-    const unlocked = items.filter(item => metaData.unlocked[item] === true).length;
-    const discovered = items.filter(item => metaData.discovered[item] === true && metaData.unlocked[item] !== true).length;
+    const unlocked = items.filter(item => getItemState(item) !== 'locked').length;
+    const discovered = items.filter(item => metaData.discovered[item] === true).length;
     const total = items.length;
     const statsContainer = document.querySelector('.stats');
     if (statsContainer) {
@@ -212,10 +213,19 @@ function updateStats() {
 
 function getItemsForCategory(category) {
     const cat = CATEGORIES[category];
+    // Saves can omit cards entirely; explicit lists include those missing items.
+    if (cat.filter) {
+        return cat.filter.map(name => cat.prefix + name).sort();
+    }
     const items = [];
     if (cat.isMultiple) {
         cat.subcategories.forEach(subcat => {
-            for (let key in metaData.unlocked) {
+            const allKeys = new Set([
+                ...Object.keys(metaData.unlocked),
+                ...Object.keys(metaData.discovered),
+                ...Object.keys(metaData.alerted)
+            ]);
+            for (const key of allKeys) {
                 if (subcat.isSeal && key === 'soul') {
                     items.push(key);
                 } else if (key.startsWith(subcat.prefix) && !key.startsWith('p_')) {
@@ -231,17 +241,9 @@ function getItemsForCategory(category) {
         ...Object.keys(metaData.alerted || {})
     ]);
     for (let key of allKeys) {
-        if (cat.filter) {
-            const itemName = key.replace(cat.prefix, '');
-            if (cat.filter.includes(itemName)) {
-                items.push(key);
-            }
-        } else if (cat.isSeal && key === 'soul') {
+        if (cat.isSeal && key === 'soul') {
             items.push(key);
         } else if (key.startsWith(cat.prefix) && !key.startsWith('p_')) {
-            if (category === 'tarots' || category === 'planets' || category === 'spectrals') {
-                continue;
-            }
             items.push(key);
         }
     }
@@ -289,14 +291,27 @@ function renderCategory(category) {
         }
         const cat = CATEGORIES[category];
         const allItems = getItemsForCategory(category);
-        const unlocked = allItems.filter(item => metaData.unlocked[item] === true).length;
-        const discovered = allItems.filter(item => metaData.discovered[item] === true && metaData.unlocked[item] !== true).length;
+        const unlocked = allItems.filter(item => getItemState(item) !== 'locked').length;
+        const discovered = allItems.filter(item => metaData.discovered[item] === true).length;
         const total = allItems.length;
 
         const html = `
             <div class="content-section active">
                 <div class="category-header">
-                    <h2>${__(cat.name)}</h2>
+                    <div class="category-heading">
+                        <h2>${__(cat.name)}</h2>
+                        <div class="category-actions">
+                            <button type="button" class="control-btn" id="lock-category" title="${__('btn.lock_category', { category: __(cat.name) })}">
+                                <i class="fa-solid fa-lock" aria-hidden="true"></i> ${__('btn.lock_all')}
+                            </button>
+                            <button type="button" class="control-btn" id="unlock-category" title="${__('btn.unlock_category', { category: __(cat.name) })}">
+                                <i class="fa-solid fa-unlock" aria-hidden="true"></i> ${__('btn.unlock_all')}
+                            </button>
+                            <button type="button" class="control-btn" id="discover-category" title="${__('btn.discover_category', { category: __(cat.name) })}">
+                                <i class="fa-solid fa-eye" aria-hidden="true"></i> ${__('btn.discover_all')}
+                            </button>
+                        </div>
+                    </div>
                     <div class="stats">
                         <div class="stat-item">
                             <div class="stat-label">${__('stat.unlocked')}</div>
@@ -320,6 +335,9 @@ function renderCategory(category) {
         const applyRender = () => {
             if (currentCategory !== category) return;
             container.innerHTML = html;
+            document.getElementById('unlock-category').addEventListener('click', () => setCategoryState(category, 'unlocked'));
+            document.getElementById('lock-category').addEventListener('click', () => setCategoryState(category, 'locked'));
+            document.getElementById('discover-category').addEventListener('click', () => setCategoryState(category, 'discovered'));
             document.querySelectorAll('.item-card').forEach(card => {
                 card.addEventListener('click', () => toggleItem(card.dataset.id));
                 card.addEventListener('keydown', (e) => {
@@ -372,8 +390,8 @@ function showCategorySkeletonLoading(category) {
 function getItemState(id) {
     const unlocked = metaData.unlocked[id];
     const discovered = metaData.discovered[id];
+    if (discovered === true) return 'discovered';
     if (unlocked === true) return 'unlocked';
-    if (discovered === true && unlocked !== true) return 'discovered';
     return 'locked';
 }
 
@@ -400,18 +418,9 @@ function getImageUrl(id, category) {
 
 function toggleItem(id) {
     const currentState = getItemState(id);
-    if (currentState === 'locked') {
-        metaData.discovered[id] = true;
-        metaData.unlocked[id] = false;
-    } else if (currentState === 'discovered') {
-        metaData.discovered[id] = true;
-        metaData.unlocked[id] = true;
-        metaData.alerted[id] = true;
-    } else {
-        metaData.discovered[id] = false;
-        metaData.unlocked[id] = false;
-        metaData.alerted[id] = false;
-    }
+    const nextState = currentState === 'locked' ? 'unlocked' :
+        currentState === 'unlocked' ? 'discovered' : 'locked';
+    setItemState(id, nextState);
     const card = document.querySelector(`[data-id="${id}"]`);
     if (card) {
         const newState = getItemState(id);
@@ -426,20 +435,45 @@ function toggleItem(id) {
     updateStats();
 }
 
-function unlockAll() {
-    for (let key in metaData.unlocked) {
-        metaData.unlocked[key] = true;
-        metaData.discovered[key] = true;
-        metaData.alerted[key] = true;
+function getAllCollectionItems() {
+    return new Set([
+        ...Object.keys(metaData.unlocked),
+        ...Object.keys(metaData.discovered),
+        ...Object.keys(metaData.alerted),
+        ...Object.values(CATEGORIES)
+            .flatMap(cat => (cat.filter || []).map(name => cat.prefix + name))
+    ]);
+}
+
+function setItemState(id, state) {
+    metaData.unlocked[id] = state !== 'locked';
+    metaData.discovered[id] = state === 'discovered';
+    metaData.alerted[id] = state !== 'locked';
+}
+
+function setCollectionState(items, state) {
+    for (const id of items) {
+        // Unlocking must not erase an existing discovery.
+        const targetState = state === 'unlocked' && metaData.discovered[id] === true ?
+            'discovered' : state;
+        setItemState(id, targetState);
     }
     renderCategory(currentCategory);
 }
 
+function setCategoryState(category, state) {
+    if (!CATEGORIES[category] || category === 'profile') return;
+    setCollectionState(getItemsForCategory(category), state);
+}
+
+function unlockAll() {
+    setCollectionState(getAllCollectionItems(), 'unlocked');
+}
+
+function discoverAll() {
+    setCollectionState(getAllCollectionItems(), 'discovered');
+}
+
 function lockAll() {
-    for (let key in metaData.unlocked) {
-        metaData.unlocked[key] = false;
-        metaData.discovered[key] = false;
-        metaData.alerted[key] = false;
-    }
-    renderCategory(currentCategory);
+    setCollectionState(getAllCollectionItems(), 'locked');
 }

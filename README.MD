@@ -24,10 +24,10 @@
 
 ## Features
 
-- **Collection management** — unlock, discover, or lock any card (Jokers, Tarots, Planets, Spectrals, Vouchers, Decks, Modifiers, Tags, Blinds)
+- **Collection management** — unlock, discover, or lock items (Jokers, Tarots, Planets, Spectrals, Vouchers, Decks, Booster Packs, Modifiers, Tags, Blinds)
 - **Profile editor** — edit name, high scores, career stats, progress tracking, challenge progress, and deck statistics with win rates
 - **Save editor** — full save.jkr editing with Game, Deck, Jokers, Consumables, Vouchers, and Planets tabs
-- **Bulk operations** — unlock/lock all per category, bulk select and edit deck cards
+- **Bulk operations** — unlock/discover/lock all globally or per category, bulk select and edit deck cards
 - **Smart search** — real-time card filtering by name
 - **Import/Export .jkr** — native Balatro format, 100% client-side, no server required
 - **Responsive design** — desktop and mobile with adaptive layout and hamburger menu
@@ -118,11 +118,13 @@ BalatroEditor/
 
 1. Open `index.html` in your browser
 2. Import your `.jkr` file using the sidebar or tab buttons
-3. Make your changes — click cards to toggle unlock state, edit fields in Profile/Save editor
+3. Make your changes — click cards to cycle locked → unlocked → discovered → locked, edit fields in Profile/Save editor
 4. Click **Export .jkr** (or **Save & Export** in Profile) to save
 5. **Close Balatro completely**, backup your original file, then replace it with the exported one
 
-Cards show **green** (unlocked), **yellow** (discovered), or **red** (locked) borders. Progress bars update automatically as you edit.
+Cards show **blue** (unlocked) or **gold** (discovered) borders; locked cards are faded with **red** badges. Counts update automatically; discovered cards also count as unlocked.
+
+Use **Unlock All**, **Discover All**, or **Lock All** in the sidebar for the whole collection, or beside a category heading for that category, regardless of search filters. Unlocking preserves discoveries; discovering also unlocks items.
 
 ---
 
